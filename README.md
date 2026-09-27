@@ -4,9 +4,9 @@ GitHub repository for Software Engineering, Fall 2026, Team 8
 ### People
 - [Joshua Alston](https://github.com/JoshuaMKW)
 - [James Reid Thompson](https://github.com/gamedifficulity)
-- !NAME HERE
-- !NAME HERE
-- !NAME HERE
+- [Jonathan Lee](https://github.com/Fallen-Azurel)
+- [Risha Mothukuru](https://github.com/rishamothukuru)
+- [Ahnaf Adib](https://github.com/KoldAd1b)
 - !NAME HERE
 - !NAME HERE
 
