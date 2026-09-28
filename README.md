@@ -8,7 +8,7 @@ GitHub repository for Software Engineering, Fall 2026, Team 8
 - [Risha Mothukuru](https://github.com/rishamothukuru)
 - [Ahnaf Adib](https://github.com/KoldAd1b)
 - [Nishanth Kandula](https://github.com/coder6448)
-- !NAME HERE
+- [Kevin Tran](https://github.com/KyberKitsu)
 
 ---
 
