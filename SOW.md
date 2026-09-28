@@ -1,10 +1,10 @@
-# Statement of Work — AI Student Planner
+# Statement of Work — Cramberry
 
 **Project Title**
-AI Student Planner
+Cramberry
 
 **Project Overview**
-The AI Student Planner is a web-based application designed to help students organize and manage their academic responsibilities. Users will be able to enter information such as courses, assignments, exams, deadlines, and study tasks. The system will use the **Gemini API** to analyze this information and generate a personalized, prioritized study plan.
+Cramberry is a web-based application designed to help students organize and manage their academic responsibilities. Users will be able to enter information such as courses, assignments, exams, deadlines, and study tasks. The system will use the **Gemini API** to analyze this information and generate a personalized, prioritized study plan.
 The planner will also allow students to update or complete tasks. When academic responsibilities change, the system can regenerate the student's plan based on the latest information.
 
 **Project Objective**
