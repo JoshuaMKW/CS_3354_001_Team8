@@ -12,7 +12,7 @@ GitHub repository for Software Engineering, Fall 2026, Team 8
 
 ---
 
-# Project Name Here
+# AI Student Planner​
 Project description here
 
 ---
