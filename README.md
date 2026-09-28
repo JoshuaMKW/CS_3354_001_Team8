@@ -7,7 +7,7 @@ GitHub repository for Software Engineering, Fall 2026, Team 8
 - [Jonathan Lee](https://github.com/Fallen-Azurel)
 - [Risha Mothukuru](https://github.com/rishamothukuru)
 - [Ahnaf Adib](https://github.com/KoldAd1b)
-- !NAME HERE
+- [Nishanth Kandula](https://github.com/coder6448)
 - !NAME HERE
 
 ---
