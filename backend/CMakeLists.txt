@@ -5,6 +5,7 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 add_library(cramberry_backend
+    tasks/TaskController.cpp
     agent/Agent.cpp
     notifications/NotificationController.cpp
     notifications/ReminderScheduler.cpp
@@ -25,6 +26,7 @@ FetchContent_MakeAvailable(googletest)
 enable_testing()
 
 add_executable(cramberry_tests
+    tests/test_rm_tasks.cpp
     tests/test_manage_study_preferences.cpp
     tests/test_notification_settings.cpp
 )
