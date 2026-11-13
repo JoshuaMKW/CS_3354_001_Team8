@@ -4,7 +4,7 @@
 **Test author:** Joshua Alston (JA)
 **Use cases covered:** UC-15 Manage Study Preferences, UC-16 Update Notification Settings
 
-Each test case uses the format from Chapter 13 (Test case ID, Test author, Requirement, Preconditions, Test steps, Expected result, Actual result, Pass/Fail). They are **black-box** tests: each one comes from a requirement and the expected behavior in the use case and sequence diagrams, not from the code. *Actual result* and *Pass/Fail* stay blank until the test is run.
+IDs follow the team's `TC-<use case>-<n>` scheme. Test cases are grouped as successful flow, alternative flow, invalid input and integration, and each one uses the format from Chapter 13 (Test case ID, Test author, Requirement, Preconditions, Test steps, Expected result, Actual result, Pass/Fail). They are **black-box** tests: each one comes from a requirement and the expected behavior in the use case and sequence diagrams, not from the code. *Actual result* and *Pass/Fail* stay blank until the test is run.
 
 Every test runs against the stack in the SOW/WOW: the Next.js app on a Vercel preview deployment, Supabase Auth and PostgreSQL, and the Gemini API. Each test uses a dedicated **test student account**, never a real student's account.
 
@@ -16,11 +16,11 @@ Every test runs against the stack in the SOW/WOW: the Next.js app on a Vercel pr
 > **Components:** User Profile System, Database System, AI Scheduling System
 > **Flow (sequence diagram):** Update Study Schedule → GetActiveStudyItems() → CheckForConflicts() → *[no conflicts]* GenerateSchedule() → Transact → Confirmation, *[exception]* Show Conflict
 
-### TC-JA-01 — Save valid study preferences
+### TC-15-01 — Save Valid Study Preferences
 
 | Field | Value |
 | :--- | :--- |
-| **Test case ID** | TC-JA-01 |
+| **Test case ID** | TC-15-01 |
 | **Test author** | Joshua Alston (JA) |
 | **Use case** | UC-15 Manage Study Preferences |
 | **Test level** | System (end to end) |
@@ -31,26 +31,11 @@ Every test runs against the stack in the SOW/WOW: the Next.js app on a Vercel pr
 | **Actual result** | *Leave blank until the test is run.* |
 | **Pass/Fail** | *Leave blank until the actual result is compared with the expected result.* |
 
-### TC-JA-02 — Reject a break longer than the session length
+### TC-15-02 — Personal Time Conflict
 
 | Field | Value |
 | :--- | :--- |
-| **Test case ID** | TC-JA-02 |
-| **Test author** | Joshua Alston (JA) |
-| **Use case** | UC-15 Manage Study Preferences (Validate Data → *extends* Show Error) |
-| **Test level** | System |
-| **Requirement** | UC-15 validation rule: The system shall validate study preferences before saving them and shall reject a break that is longer than one study session. |
-| **Preconditions** | The test student is signed in. Saved preferences: *Session length* = 90 min, *Break after each session* = 15 min. The student is on *Set Study Settings*. |
-| **Test steps** | 1. Change *Break after each session* to 120 min. <br>2. Try to click **Save settings**. <br>3. Reload the page. <br>4. Check the student's `PlannerSettings` row in Supabase. |
-| **Expected result** | The message "Break can't be longer than your 90 min session" appears next to the field, and **Save settings** is disabled. Nothing is written to the database. After the reload, the break is still 15 min. |
-| **Actual result** | *Leave blank until the test is run.* |
-| **Pass/Fail** | *Leave blank until the actual result is compared with the expected result.* |
-
-### TC-JA-03 — Personal time that conflicts with an existing study block
-
-| Field | Value |
-| :--- | :--- |
-| **Test case ID** | TC-JA-03 |
+| **Test case ID** | TC-15-02 |
 | **Test author** | Joshua Alston (JA) |
 | **Use case** | UC-15 Manage Study Preferences (sequence diagram: CheckForConflicts() → *[exception]* Show Conflict) |
 | **Test level** | Integration (User Profile System + Database System) |
@@ -61,11 +46,26 @@ Every test runs against the stack in the SOW/WOW: the Next.js app on a Vercel pr
 | **Actual result** | *Leave blank until the test is run.* |
 | **Pass/Fail** | *Leave blank until the actual result is compared with the expected result.* |
 
-### TC-JA-04 — Generated schedule follows the saved preferences
+### TC-15-03 — Break Longer Than Session
 
 | Field | Value |
 | :--- | :--- |
-| **Test case ID** | TC-JA-04 |
+| **Test case ID** | TC-15-03 |
+| **Test author** | Joshua Alston (JA) |
+| **Use case** | UC-15 Manage Study Preferences (Validate Data → *extends* Show Error) |
+| **Test level** | System |
+| **Requirement** | UC-15 validation rule: The system shall validate study preferences before saving them and shall reject a break that is longer than one study session. |
+| **Preconditions** | The test student is signed in. Saved preferences: *Session length* = 90 min, *Break after each session* = 15 min. The student is on *Set Study Settings*. |
+| **Test steps** | 1. Change *Break after each session* to 120 min. <br>2. Try to click **Save settings**. <br>3. Reload the page. <br>4. Check the student's `PlannerSettings` row in Supabase. |
+| **Expected result** | The message "Break can't be longer than your 90 min session" appears next to the field, and **Save settings** is disabled. Nothing is written to the database. After the reload, the break is still 15 min. |
+| **Actual result** | *Leave blank until the test is run.* |
+| **Pass/Fail** | *Leave blank until the actual result is compared with the expected result.* |
+
+### TC-15-04 — Schedule Follows Preferences
+
+| Field | Value |
+| :--- | :--- |
+| **Test case ID** | TC-15-04 |
 | **Test author** | Joshua Alston (JA) |
 | **Use case** | UC-15 Manage Study Preferences → UC-5 Generate AI Study Schedule (*include*) |
 | **Test level** | Integration (User Profile System + AI Scheduling System via Gemini) |
@@ -84,11 +84,11 @@ Every test runs against the stack in the SOW/WOW: the Next.js app on a Vercel pr
 > **Components:** Notification System, Database System
 > **Flow (sequence diagram):** Update Notifications → ValidatePreferences() → *[validated]* Transact(acc) → ok → Confirmation, *[exception]* Show Error
 
-### TC-JA-05 — Opt in to email deadline reminders
+### TC-16-01 — Opt In to Email Reminders
 
 | Field | Value |
 | :--- | :--- |
-| **Test case ID** | TC-JA-05 |
+| **Test case ID** | TC-16-01 |
 | **Test author** | Joshua Alston (JA) |
 | **Use case** | UC-16 Update Notification Settings (*[validated]* path) |
 | **Test level** | System |
@@ -99,41 +99,11 @@ Every test runs against the stack in the SOW/WOW: the Next.js app on a Vercel pr
 | **Actual result** | *Leave blank until the test is run.* |
 | **Pass/Fail** | *Leave blank until the actual result is compared with the expected result.* |
 
-### TC-JA-06 — Deadline reminder is sent at the chosen time
+### TC-16-02 — Opt Out of All Notifications
 
 | Field | Value |
 | :--- | :--- |
-| **Test case ID** | TC-JA-06 |
-| **Test author** | Joshua Alston (JA) |
-| **Use case** | UC-16 Update Notification Settings → Trigger Notification Reminders |
-| **Test level** | Integration (Notification System + Task Management System + Notification Service) |
-| **Requirement** | UC-16: The system shall automatically send timed alerts that tell the student about upcoming assignment deadlines. |
-| **Preconditions** | The settings from TC-JA-05 are saved: Email is on and Deadline Reminders is set to 1 Day. The test inbox is empty. |
-| **Test steps** | 1. Create an assignment "Test HW 1" that is due 24 hours and 10 minutes from now. <br>2. Wait 15 minutes. <br>3. Check the test inbox. <br>4. Wait 15 more minutes and check the inbox again. |
-| **Expected result** | Exactly **one** reminder email arrives about 24 hours before the due date (within ±5 min). It names "Test HW 1" and shows its due date and time. No duplicate email arrives in step 4. |
-| **Actual result** | *Leave blank until the test is run.* |
-| **Pass/Fail** | *Leave blank until the actual result is compared with the expected result.* |
-
-### TC-JA-07 — Reject an invalid phone number for SMS reminders
-
-| Field | Value |
-| :--- | :--- |
-| **Test case ID** | TC-JA-07 |
-| **Test author** | Joshua Alston (JA) |
-| **Use case** | UC-16 Update Notification Settings (ValidatePreferences() → *[exception]* Show Error) |
-| **Test level** | System |
-| **Requirement** | FR-12: The system shall provide an opt-in email and/or phone number notification system. UC-16: The system shall validate notification preferences before saving them. |
-| **Preconditions** | The test student is signed in and is on *Account → Notifications*. Notifications are on with Email as the only source. No phone number is on file. |
-| **Test steps** | 1. Turn on the phone/SMS notification source. <br>2. Enter `12345` as the phone number. <br>3. Click **Save**. <br>4. Reload the page and check the notification settings row in Supabase. |
-| **Expected result** | The system shows an error such as "Enter a valid phone number" and does not save. After the reload, SMS is still off, no phone number is stored, and Email is still the only source. |
-| **Actual result** | *Leave blank until the test is run.* |
-| **Pass/Fail** | *Leave blank until the actual result is compared with the expected result.* |
-
-### TC-JA-08 — Opt out of all notifications
-
-| Field | Value |
-| :--- | :--- |
-| **Test case ID** | TC-JA-08 |
+| **Test case ID** | TC-16-02 |
 | **Test author** | Joshua Alston (JA) |
 | **Use case** | UC-16 Update Notification Settings |
 | **Test level** | System |
@@ -144,17 +114,47 @@ Every test runs against the stack in the SOW/WOW: the Next.js app on a Vercel pr
 | **Actual result** | *Leave blank until the test is run.* |
 | **Pass/Fail** | *Leave blank until the actual result is compared with the expected result.* |
 
+### TC-16-03 — Invalid Phone Number
+
+| Field | Value |
+| :--- | :--- |
+| **Test case ID** | TC-16-03 |
+| **Test author** | Joshua Alston (JA) |
+| **Use case** | UC-16 Update Notification Settings (ValidatePreferences() → *[exception]* Show Error) |
+| **Test level** | System |
+| **Requirement** | FR-12: The system shall provide an opt-in email and/or phone number notification system. UC-16: The system shall validate notification preferences before saving them. |
+| **Preconditions** | The test student is signed in and is on *Account → Notifications*. Notifications are on with Email as the only source. No phone number is on file. |
+| **Test steps** | 1. Turn on the phone/SMS notification source. <br>2. Enter `12345` as the phone number. <br>3. Click **Save**. <br>4. Reload the page and check the notification settings row in Supabase. |
+| **Expected result** | The system shows an error such as "Enter a valid phone number" and does not save. After the reload, SMS is still off, no phone number is stored, and Email is still the only source. |
+| **Actual result** | *Leave blank until the test is run.* |
+| **Pass/Fail** | *Leave blank until the actual result is compared with the expected result.* |
+
+### TC-16-04 — Reminder Sent on Time
+
+| Field | Value |
+| :--- | :--- |
+| **Test case ID** | TC-16-04 |
+| **Test author** | Joshua Alston (JA) |
+| **Use case** | UC-16 Update Notification Settings → Trigger Notification Reminders |
+| **Test level** | Integration (Notification System + Task Management System + Notification Service) |
+| **Requirement** | UC-16: The system shall automatically send timed alerts that tell the student about upcoming assignment deadlines. |
+| **Preconditions** | The settings from TC-16-01 are saved: Email is on and Deadline Reminders is set to 1 Day. The test inbox is empty. |
+| **Test steps** | 1. Create an assignment "Test HW 1" that is due 24 hours and 10 minutes from now. <br>2. Wait 15 minutes. <br>3. Check the test inbox. <br>4. Wait 15 more minutes and check the inbox again. |
+| **Expected result** | Exactly **one** reminder email arrives about 24 hours before the due date (within ±5 min). It names "Test HW 1" and shows its due date and time. No duplicate email arrives in step 4. |
+| **Actual result** | *Leave blank until the test is run.* |
+| **Pass/Fail** | *Leave blank until the actual result is compared with the expected result.* |
+
 ---
 
 ## Traceability Summary
 
-| Test case | Use case | Requirement(s) | Path tested |
+| Test case | Use case | Requirement(s) | Category |
 | :--- | :--- | :--- | :--- |
-| TC-JA-01 | UC-15 | FR-7, NFR-2 | Valid save (main path) |
-| TC-JA-02 | UC-15 | UC-15 validation | Invalid input → Show Error |
-| TC-JA-03 | UC-15 | UC-15 conflict check | Conflict → Show Conflict |
-| TC-JA-04 | UC-15 → UC-5 | FR-16, UC-15 | Preferences followed by AI schedule |
-| TC-JA-05 | UC-16 | FR-12 | Valid opt-in (main path) |
-| TC-JA-06 | UC-16 | UC-16 timed alerts | Reminder delivered on time, once |
-| TC-JA-07 | UC-16 | FR-12, UC-16 validation | Invalid input → Show Error |
-| TC-JA-08 | UC-16 | FR-13 | Opt-out stops all reminders |
+| TC-15-01 | UC-15 | FR-7, NFR-2 | Successful flow |
+| TC-15-02 | UC-15 | UC-15 conflict check | Alternative flow |
+| TC-15-03 | UC-15 | UC-15 validation | Invalid input |
+| TC-15-04 | UC-15 → UC-5 | FR-16, UC-15 | Integration |
+| TC-16-01 | UC-16 | FR-12 | Successful flow |
+| TC-16-02 | UC-16 | FR-13 | Alternative flow |
+| TC-16-03 | UC-16 | FR-12, UC-16 validation | Invalid input |
+| TC-16-04 | UC-16 | UC-16 timed alerts | Integration |

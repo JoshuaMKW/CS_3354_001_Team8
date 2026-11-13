@@ -15,6 +15,9 @@
 # production
 /build
 
+# c++ backend build output
+/backend/build/
+
 # misc
 .DS_Store
 *.pem
