@@ -10,6 +10,8 @@ add_library(cramberry_backend
     notifications/NotificationController.cpp
     notifications/ReminderScheduler.cpp
     settings/SettingsController.cpp
+    schedule/UploadSchedule.cpp
+    schedule/ViewSchedule.cpp
 )
 target_include_directories(cramberry_backend PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 
@@ -29,6 +31,7 @@ add_executable(cramberry_tests
     tests/test_rm_tasks.cpp
     tests/test_manage_study_preferences.cpp
     tests/test_notification_settings.cpp
+    tests/test_jo_schedule.cpp
 )
 target_link_libraries(cramberry_tests PRIVATE cramberry_backend GTest::gmock_main)
 
