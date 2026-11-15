@@ -1,0 +1,25 @@
+# AA (Ahnaf Adib) test run: UC-10, UC-11, UC-12, NFR-18, NFR-19
+# Date: 2026-11-15 00:01 UTC  |  Machine: macOS 27.0.1, Apple clang version 21.0.0 (clang-2100.1.1.101)
+# Command: ./backend/build/cramberry_tests --gtest_filter='AATests.*'
+
+Running main() from gmock_main.cc
+Note: Google Test filter = AATests.*
+[==========] Running 5 tests from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 5 tests from AATests
+[ RUN      ] AATests.TC_10_01_ValidRequestIsAccepted
+[       OK ] AATests.TC_10_01_ValidRequestIsAccepted (0 ms)
+[ RUN      ] AATests.TC_11_01_SaveAndUpdateOwnRecords
+[       OK ] AATests.TC_11_01_SaveAndUpdateOwnRecords (0 ms)
+[ RUN      ] AATests.TC_12_01_ScheduleThatBreaksRulesIsRejected
+[       OK ] AATests.TC_12_01_ScheduleThatBreaksRulesIsRejected (0 ms)
+[ RUN      ] AATests.TC_NFR18_01_BackendRequestsFinishWithin2Seconds
+[ NFR-18   ] p95 = 0.680708 ms, max = 0.947958 ms over 1000 requests
+[       OK ] AATests.TC_NFR18_01_BackendRequestsFinishWithin2Seconds (280 ms)
+[ RUN      ] AATests.TC_NFR19_01_StudentsCantReachEachOthersData
+[       OK ] AATests.TC_NFR19_01_StudentsCantReachEachOthersData (0 ms)
+[----------] 5 tests from AATests (281 ms total)
+
+[----------] Global test environment tear-down
+[==========] 5 tests from 1 test suite ran. (281 ms total)
+[  PASSED  ] 5 tests.
