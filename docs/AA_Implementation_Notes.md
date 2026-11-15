@@ -51,9 +51,9 @@ Compared with the Phase 2 class diagram, these classes are new. They are all bac
 **Tool used:** Claude Code (Anthropic, Claude Opus 5.5), run in the terminal inside the project folder with access to the repo, the sequence diagrams and the SE Document.
 
 **Example prompts:**
-- "What do I have to do in Project_Assignments_4-1.pdf based on my use cases?"
-- "We will implement it all: UC-10 to UC-12."
-- "What's the order of tasks I should take?"
+- "What do we have to do in @Project_Assignments_4-1.pdf"
+- "No we will implement it all UC 10 to 12"
+- "Yeah, you need to decrease the number of my tests. Let's aim for 5 tests. Do not go overboard."
 
 **How the generated code was checked and changed:**
 - **Matched to the repo.** The AI first proposed a new Next.js project. After the team repo was cloned, it turned out the backend is C++ with GoogleTest and repository interfaces, so the code was rewritten to follow that pattern and reuse `SettingsController::validate()` for preference checks.

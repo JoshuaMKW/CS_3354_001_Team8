@@ -173,11 +173,11 @@ The UC-12 test uses this request: student-a, submitted at now, tasks **t-quiz** 
 
 ## Incomplete Features and Remaining Work
 
-All 5 tests pass, but they test the backend logic against in-memory fakes. The following parts are not built yet or not tested yet:
+Next steps:
 
-1. **Supabase adapters.** Production versions of `IStudentDataRepository`, `IGeneratedScheduleRepository` and `ITaskDetailsSource`, plus row-level-security policies on `owner_id` so the database enforces NFR-19 as well.
-2. **Gemini client.** A real `IGeminiClient` that sends the prompt and returns the JSON reply, with a timeout.
-3. **HTTP layer.** The Next.js routes (`POST /api/schedule`, `GET`/`POST`/`PATCH /api/data`) that read the Supabase Auth session and call these controllers.
-4. **NFR-18 against the deployed system.** Re-run TC-NFR18-01 against the Vercel preview with a real database to include network and query time.
-5. **Preference check on AI output.** UC-12 checks structure, times, deadlines and overlaps. Checking the AI's events against study hours and personal time is done by `findPreferenceViolations()` (JA, UC-15) and should be called from UC-12 once the weekly and dated schedule formats are unified.
-6. **Untested error paths.** The code handles sign-in errors, a Schedule System or Gemini outage, a failed database write (the data-consistency half of NFR-19) and malformed AI replies, but the 5 selected test cases don't cover them.
+1. **Supabase adapters** for `IStudentDataRepository`, `IGeneratedScheduleRepository` and `ITaskDetailsSource`, with row-level security on `owner_id`.
+2. **Gemini client** implementing `IGeminiClient`, with a timeout.
+3. **HTTP routes** (`POST /api/schedule`, `GET`/`POST`/`PATCH /api/data`) that read the Supabase Auth session and call the controllers.
+4. **Error-path tests** for sign-in, Schedule System or Gemini outages, failed writes and malformed AI replies.
+5. **NFR-18 on the deployed system**: rerun TC-NFR18-01 against the Vercel preview with the real database.
+6. **Preference check on AI output**: call `findPreferenceViolations()` (JA, UC-15) from UC-12 once the weekly and dated schedule formats match.
