@@ -60,7 +60,6 @@ Compared with the Phase 2 class diagram, these classes are new. They are all bac
 - **Matched to the repo.** The AI first proposed a new Next.js project. After the team repo was cloned, it turned out the backend is C++ with GoogleTest and repository interfaces, so the code was rewritten to follow that pattern and reuse `SettingsController::validate()` for preference checks.
 - **Matched to the design.** Each method was checked against the AA sequence diagrams (validate → getTaskDetails → prepareRequest → forwardRequest; checkAccess → select/update; parseResponse → checkFieldsAndFormat → saveSchedule), including the exact status codes and messages.
 - **Built and run.** All 5 AA tests pass. The output is saved in `docs/testing/AA-results/`. The 9 tests already on `main` (UC-15 and UC-16, by Joshua) were also run, only to confirm the AA changes didn't break them, and they still pass.
-- **Tests checked by breaking the code.** Three bugs were introduced on purpose: the ownership check removed, the overlap check removed, and the UC-10 "drop other students' rows" guard removed. The first two were caught by tests. The third wasn't, because the fake task source already filtered by student. A new test with a deliberately broken task source was added to TC-NFR19-01, and the bug is now caught.
 
 **My own review (Ahnaf Adib):**
 - **How I split the work.** The AI wrote the code and the test cases. I gave it the references and checked what came back.
