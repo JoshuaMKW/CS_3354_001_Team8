@@ -48,12 +48,13 @@ Compared with the Phase 2 class diagram, these classes are new. They are all bac
 
 ## AI-Assisted Development
 
-**Tool used:** Claude Code (Anthropic, Claude Opus 5.5), run in the terminal inside the project folder with access to the repo, the sequence diagrams and the SE Document.
+**Tools used:** Claude Code (Anthropic, Claude Opus 5.5), run in the terminal inside the project folder with access to the repo, the diagrams and the SE Document. Codex as a second model to cross-check the work.
 
 **Example prompts:**
-- "What do we have to do in @Project_Assignments_4-1.pdf"
-- "No we will implement it all UC 10 to 12"
-- "Yeah, you need to decrease the number of my tests. Let's aim for 5 tests. Do not go overboard."
+- "Review the schedule diagram."
+- "Review the sequence diagram."
+- "Review my teammates' code."
+- "Review the overall structure that there needs to be."
 
 **How the generated code was checked and changed:**
 - **Matched to the repo.** The AI first proposed a new Next.js project. After the team repo was cloned, it turned out the backend is C++ with GoogleTest and repository interfaces, so the code was rewritten to follow that pattern and reuse `SettingsController::validate()` for preference checks.
@@ -65,5 +66,7 @@ Compared with the Phase 2 class diagram, these classes are new. They are all bac
 - **How I split the work.** The AI wrote the code and the test cases. I gave it the references and checked what came back.
 - **References I gave it.** I gave the AI my sequence diagrams for UC-10, UC-11 and UC-12, the use case descriptions and the assignment PDF. I drew those diagrams, so I could tell where the code drifted from them.
 - **Test cases checked against the diagrams.** For each test case, I compared the inputs, steps and expected messages with the alternate flows in my sequence diagrams. Another student's record and an AI schedule with overlapping or late events each had to produce the error my diagram shows.
+- **How I worked.** I reviewed the diagram images first, then the code.
+- **Each test case checked twice.** After each test case, I verified it myself and then had Codex check it as well, so a second model reviewed the work.
 - **Tests run on my machine.** I built the project on my laptop, ran my 5 tests and compared the output with the expected results.
 - **What I learned.** When I asked the AI to build UC-10 with nothing else to go on, it picked Next.js, the wrong stack. After I gave it the team repo and my diagrams, its code matched our design and needed few fixes.
