@@ -1,0 +1,227 @@
+CRAMBERRY / CS 3354 TEAM 8 — NISHANTH (NK) CODE EXPLANATION
+Version: 2026-11-15
+Contributor: Nishanth Kandula (NK)
+Repository: https://github.com/JoshuaMKW/CS_3354_001_Team8
+
+WHAT I REVIEWED
+================
+1. Group08_SE_Document_Assignment #- Fall2026.pdf (the uploaded design document):
+   - Page 9: UC-05 Generate AI Study Schedule, UC-06 Modify AI Schedule,
+     and UC-07 Interact with AI Chatbot (all assigned to NK).
+   - Page 7: NK functional requirements 16-21, including daily/weekly planning,
+     manual editing, duration estimates, adaptation, chat and task breakdown.
+   - Page 8: NK non-functional requirement: chat response under 10 seconds
+     at least 90% of the time.
+   - Page 31: NK sequence diagrams for schedule generation/modification and chat.
+2. Team 8 GitHub, main branch, accessed November 15, 2026:
+   - backend/agent/Agent.h and Agent.cpp (IAiClient and Agent).
+   - backend/schedule/Schedule.h (StudyBlock / IScheduleRepository).
+   - backend/settings/Settings.h (StudyPreferences).
+   - backend/common/Time.h (Day / TimeRange).
+   - backend/CMakeLists.txt (C++20 / GoogleTest).
+   - WOW.md (separate feature branch + pull request; no direct main commits).
+3. Open pull request #4 by Ahnaf (AA): introduces separate scheduling types
+   and validation / generation services. See integration limitations below.
+
+IMPORTANT REALITY ABOUT THE STACK
+=================================
+The Statement of Work calls for Next.js, Gemini API, Supabase and Vercel.
+The CURRENT GitHub backend work for the other members is C++20 with CMake
+and GoogleTest, so NK's contribution is ALSO C++20 and integrates with the
+published C++ interfaces. This is a backend feature contribution, not a
+complete deployed Next.js interface or a live Gemini/Supabase connection.
+
+UC-05: GENERATE AI STUDY SCHEDULE
+=================================
+Files: backend/agent/NKStudyScheduleService.h/.cpp
+       backend/schedule/NKScheduleRules.h/.cpp
+- Accepts the authenticated student ID, saved study preferences, and tasks.
+- Calls the team's existing Agent, which delegates to IAiClient (the future
+  Gemini adapter) to propose a schedule.
+- Supports weekly or single-day planning. In daily mode, availability is
+  restricted to the selected weekday before asking the AI.
+- Checks student identity, unknown task IDs, invalid times, conflicting
+  blocks, study-hour constraints, breaks, deadline violations, and more.
+- Saves an accepted plan through the team's IScheduleRepository interface.
+- On rejected AI output or an AI exception, makes no intentional write.
+- On successful production save, IScheduleRepository::replace must be atomic
+  so a database failure cannot leave half a schedule.
+- No real Gemini API key is stored in the code. A team-owned IAiClient
+  implementation must call Gemini over the server-side API.
+
+UC-06: MODIFY AI SCHEDULE
+=========================
+Files: backend/schedule/NKScheduleEditor.h/.cpp
+       backend/schedule/NKScheduleRules.h/.cpp
+- previewMove() changes a proposed StudyBlock in memory BEFORE acceptance;
+  it validates the whole schedule and never saves a preview.
+- moveAcceptedBlock() loads the logged-in student's accepted schedule,
+  locates exactly one matching assignment and original time range, applies
+  the requested new time/title, checks preferences/deadlines/collisions,
+  and saves only if the full result is valid.
+- A failed edit leaves the existing schedule untouched by this service.
+- Requires server-side Supabase row-level/ownership checks in production.
+- The editor is reusable when the chatbot suggests moving a study session.
+
+UC-07: INTERACT WITH AI CHATBOT
+===============================
+Files: backend/chat/NKChatbotService.h/.cpp
+- Accepts a student question, a server-provided list of THEIR assignments,
+  THEIR saved schedule, and up to 10 previous messages.
+- Calls an injected INKChatAIClient (to be connected to Gemini). The AI can
+  answer questions about schedule and tasks, or suggest creating a task or
+  moving a study block.
+- ask() NEVER automatically creates or edits a task. It returns a suggested
+  action to display to the student for explicit confirmation.
+- applyConfirmedAction() validates and applies a confirmed task creation
+  through INKChatTaskWriter or a move through NKScheduleEditor.
+- The authenticated student ID overrides any student ID supplied by the AI.
+- Rejects oversized/blank messages, foreign task references and malformed
+  actions; catches AI/network errors without affecting saved schedules.
+- INKChatAIClient receives a 9-second deadline. Actual Gemini HTTP requests
+  MUST set a network timeout; this synchronous service alone cannot stop a
+  provider that ignores the deadline. Performance NFR needs live testing.
+- INKChatTaskWriter must be implemented using the team's authorized task
+  backend. Do not let browser clients provide someone else's student ID.
+- Store pending proposed actions server-side for a hardened deployment so
+  an untrusted browser cannot replace an action before confirmation.
+
+SHARED VALIDATION / TESTING
+===========================
+File: backend/schedule/NKScheduleRules.h/.cpp
+Adds checks to the existing findPreferenceViolations() function. It does NOT
+alter the team's Agent.cpp, Schedule.h, Settings.h or shared C++ models.
+
+File: backend/tests/test_nk.cpp
+Contains 16 GoogleTest cases for valid and invalid generation, saving,
+previewing, rescheduling, student isolation, chatbot failures, suggested
+changes and confirmed task creation.
+
+File: backend/tests/nk_offline_smoke.cpp
+Dependency-free smoke test for the three NK use cases, runnable without
+GoogleTest or Gemini/Supabase credentials.
+
+File: docs/testing/NK_Test_Cases.md
+Test-case summary and verification notes, following the team's docs/testing/
+convention.
+
+VERIFICATION PERFORMED
+======================
+- The NK C++ files compile with g++ 14 / C++20, -Wall, -Wextra,
+  -Werror, and -pedantic against reconstructed copies of Team 8's published
+  public header contracts (from the main branch).
+- The dependency-free smoke test executed successfully.
+- All 16 NK GoogleTest test bodies executed successfully under a temporary
+  lightweight offline test harness that replicates common GoogleTest
+  assertion macros (NOT official GoogleTest).
+- Could NOT execute the actual team's complete CMake/GoogleTest suite or
+  connect to live Gemini/Supabase because the full GitHub checkout and
+  network-downloaded test dependencies are not available in this environment.
+
+EXACT FILE PATHS TO ADD TO THE TEAM'S GITHUB REPOSITORY
+======================================================
+The paths below are RELATIVE TO THE REPOSITORY ROOT. Create missing folders.
+Do not upload the ZIP as one file; EXTRACT it and upload the actual files.
+
+backend/agent/NKStudyScheduleService.h
+backend/agent/NKStudyScheduleService.cpp
+backend/schedule/NKScheduleRules.h
+backend/schedule/NKScheduleRules.cpp
+backend/schedule/NKScheduleEditor.h
+backend/schedule/NKScheduleEditor.cpp
+backend/chat/NKChatbotService.h
+backend/chat/NKChatbotService.cpp
+backend/nk/NKModule.cmake
+backend/tests/test_nk.cpp
+backend/tests/nk_offline_smoke.cpp
+docs/testing/NK_Test_Cases.md
+docs/NK_Code_Explanation.txt
+
+REQUIRED SMALL CHANGE TO EXISTING BACKEND/CMakelists.txt
+=======================================================
+Edit the EXISTING file: backend/CMakeLists.txt
+After BOTH `cramberry_backend` and `cramberry_tests` targets are declared,
+and AFTER target_link_libraries(cramberry_tests ...), but BEFORE
+`gtest_discover_tests(cramberry_tests)`, add exactly this one line:
+
+  include(${CMAKE_CURRENT_SOURCE_DIR}/nk/NKModule.cmake)
+
+Do NOT replace the team's whole CMakeLists.txt: the JA, JO, RM and AA
+branches also add their own sources and test files. Merging your one-line
+include is much safer than overwriting everyone else's changes.
+
+RECOMMENDED GITHUB SUBMISSION (FOLLOW TEAM'S WOW.md)
+===================================================
+1. Open https://github.com/JoshuaMKW/CS_3354_001_Team8
+2. On your own local machine:
+
+   git clone https://github.com/JoshuaMKW/CS_3354_001_Team8.git
+   cd CS_3354_001_Team8
+   git checkout main
+   git pull origin main
+   git checkout -b feature/nk-ai-schedule-chatbot
+
+3. Unzip NK_Cramberry_Contribution.zip. COPY its `backend/` and `docs/`
+   directories into the corresponding folders of the CLONED repo. Do not
+   delete or replace existing team files.
+4. Apply the one-line change to backend/CMakeLists.txt from above.
+5. Run the local smoke test:
+
+   g++ -std=c++20 -Ibackend backend/agent/Agent.cpp \
+     backend/agent/NKStudyScheduleService.cpp \
+     backend/schedule/NKScheduleRules.cpp \
+     backend/schedule/NKScheduleEditor.cpp \
+     backend/chat/NKChatbotService.cpp \
+     backend/tests/nk_offline_smoke.cpp -o nk_smoke
+   ./nk_smoke
+
+6. With network access to fetch GoogleTest, test the team's full backend:
+
+   cmake -S backend -B backend/build
+   cmake --build backend/build
+   ctest --test-dir backend/build --output-on-failure
+
+7. Commit ONLY intended files (not backend/build/, nk_smoke, .env, keys):
+
+   git add backend/agent/NKStudyScheduleService.* \
+      backend/schedule/NKScheduleRules.* \
+      backend/schedule/NKScheduleEditor.* \
+      backend/chat/NKChatbotService.* \
+      backend/nk/NKModule.cmake \
+      backend/tests/test_nk.cpp backend/tests/nk_offline_smoke.cpp \
+      backend/CMakeLists.txt docs/testing/NK_Test_Cases.md \
+      docs/NK_Code_Explanation.txt
+   git commit -m "feat(nk): UC-05 UC-06 UC-07 AI study plan and chatbot"
+   git push -u origin feature/nk-ai-schedule-chatbot
+
+8. GitHub -> Pull requests -> New pull request. Set:
+   base: main
+   compare: feature/nk-ai-schedule-chatbot
+   title: "NK: UC-05 Generate, UC-06 Modify, UC-07 AI Chatbot + tests"
+   Ask a teammate to review and merge (NO DIRECT PUSH TO MAIN).
+
+INTEGRATION GAPS TO COORDINATE WITH THE TEAM
+============================================
+1. Actual Gemini: Team must provide server-side IAiClient and
+   INKChatAIClient implementations, with secure API keys / timeouts.
+2. Real student data: IScheduleRepository and INKChatTaskWriter need Supabase
+   implementations with ownership enforcement and atomic writes.
+3. Frontend/API: Next.js routes and UI must invoke these C++ services via an
+   agreed backend bridge or move business logic to the eventual Next.js stack.
+   No frontend/API bridge has been included here.
+4. Open AA pull request #4 currently uses ScheduledEvent and UTC timestamps,
+   whereas main's Agent/Schedule use weekly StudyBlock/TimeRange. These are
+   separate models. Do NOT assume data can be saved interchangeably; agree
+   with Ahnaf on an adapter/data conversion and a single production schedule
+   repository before attempting full integration. NK's modules add no
+   conflicts with AA's NEW FILE NAMES, but backend/CMakeLists.txt must merge.
+5. Estimated duration, automatic replanning after external task changes, and
+   breaking down large assignments are listed among NK's functional
+   requirements; the three use-case services provide integration points,
+   but a production AI prompt/workflow for these subfeatures is not yet
+   implemented by the team's existing Gemini adapter (still pending).
+6. The 9-second chat deadline is a target, not proof of NFR-12 performance.
+7. Ensure version-control and school submission rules permit AI assistance;
+   review, understand, and test code before signing off on it.
+
+END
