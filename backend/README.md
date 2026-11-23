@@ -49,6 +49,8 @@ backend/out/build/Debug/cramberry_server        # http://127.0.0.1:8080
 
 ## REST API
 
+**Full reference: [API.md](API.md)**. It covers request and response shapes, validation rules, status codes and examples. The summary below lists the endpoints.
+
 Every route except register, login and health needs `Authorization: Bearer <token>`. Errors look like `{"error": "...", "details": [...]}`. Times are ISO 8601 UTC (`2026-12-01T23:59:00Z`). Weekly study hours and blocks use `{"day": "Mon", "start": "16:00", "end": "19:00"}` in the student's local time (set with `utcOffsetMinutes`).
 
 | Method and path | Purpose |
