@@ -4,10 +4,16 @@ project(CramberryBackend LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+option(CRAMBERRY_BUILD_SERVER "Build the Drogon REST API server (needs Drogon, e.g. from vcpkg)" ON)
+
+# Use-case logic with no third-party dependencies. Builds everywhere.
 add_library(cramberry_backend
     agent/Agent.cpp
+    agent/NKStudyScheduleService.cpp
     notifications/NotificationController.cpp
     notifications/ReminderScheduler.cpp
+    schedule/NKScheduleEditor.cpp
+    schedule/NKScheduleRules.cpp
     settings/SettingsController.cpp
 )
 target_include_directories(cramberry_backend PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
@@ -23,12 +29,70 @@ set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)  # needed for MSVC
 FetchContent_MakeAvailable(googletest)
 
 enable_testing()
+include(GoogleTest)
 
 add_executable(cramberry_tests
     tests/test_manage_study_preferences.cpp
     tests/test_notification_settings.cpp
 )
 target_link_libraries(cramberry_tests PRIVATE cramberry_backend GTest::gmock_main)
-
-include(GoogleTest)
 gtest_discover_tests(cramberry_tests)
+
+# ---------------------------------------------------------------------------
+# REST API (Drogon). Configure with the vcpkg toolchain to get Drogon:
+#   cmake -S backend -B backend/build -DCMAKE_TOOLCHAIN_FILE=<vcpkg>/scripts/buildsystems/vcpkg.cmake
+# ---------------------------------------------------------------------------
+if(CRAMBERRY_BUILD_SERVER)
+    find_package(Drogon CONFIG QUIET)
+    find_package(OpenSSL QUIET)
+endif()
+
+if(CRAMBERRY_BUILD_SERVER AND Drogon_FOUND AND OpenSSL_FOUND)
+    add_library(cramberry_api
+        agent/AgentController.cpp
+        agent/AgentRepository.cpp
+        agent/AgentRoutes.cpp
+        agent/GeminiClient.cpp
+        agent/Planning.cpp
+        common/Http.cpp
+        common/Json.cpp
+        data-api/Database.cpp
+        data-api/Transaction.cpp
+        notifications/NotificationRepository.cpp
+        notifications/NotificationRoutes.cpp
+        schedule/ScheduleController.cpp
+        schedule/ScheduleRepository.cpp
+        schedule/ScheduleRoutes.cpp
+        settings/SettingsRepository.cpp
+        settings/SettingsRoutes.cpp
+        tasks/Task.cpp
+        tasks/TaskController.cpp
+        tasks/TaskRepository.cpp
+        tasks/TaskRoutes.cpp
+        user/AuthGuard.cpp
+        user/Crypto.cpp
+        user/UserController.cpp
+        user/UserRepository.cpp
+        user/UserRoutes.cpp
+    )
+    target_link_libraries(cramberry_api PUBLIC cramberry_backend Drogon::Drogon OpenSSL::Crypto)
+    if(MSVC)
+        target_compile_options(cramberry_api PUBLIC /utf-8 /bigobj)
+    endif()
+
+    add_executable(cramberry_server main.cpp)
+    target_link_libraries(cramberry_server PRIVATE cramberry_api)
+
+    add_executable(cramberry_api_tests
+        tests/test_api_support.cpp
+        tests/test_local_planner.cpp
+        tests/test_repositories.cpp
+        tests/test_tasks.cpp
+        tests/test_users.cpp
+    )
+    target_link_libraries(cramberry_api_tests PRIVATE cramberry_api GTest::gmock_main)
+    gtest_discover_tests(cramberry_api_tests DISCOVERY_TIMEOUT 60)
+elseif(CRAMBERRY_BUILD_SERVER)
+    message(WARNING "Drogon or OpenSSL not found: building the use-case tests only. "
+                    "See backend/README.md to build the REST API server.")
+endif()
