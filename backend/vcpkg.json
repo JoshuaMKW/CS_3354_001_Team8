@@ -1,0 +1,26 @@
+{
+  "name": "cramberry-backend",
+  "version": "0.1.0",
+  "description": "Cramberry REST API (Drogon). SQLite for local development; add the 'supabase' feature for PostgreSQL.",
+  "builtin-baseline": "8f54ef5453e7e76ff01e15988bf243e7247c5eb5",
+  "dependencies": [
+    {
+      "name": "drogon",
+      "default-features": false,
+      "features": ["orm", "sqlite3"]
+    },
+    "openssl"
+  ],
+  "features": {
+    "supabase": {
+      "description": "Connect to Supabase PostgreSQL (builds libpq).",
+      "dependencies": [
+        {
+          "name": "drogon",
+          "default-features": false,
+          "features": ["orm", "sqlite3", "postgres"]
+        }
+      ]
+    }
+  }
+}
