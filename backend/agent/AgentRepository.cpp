@@ -19,7 +19,8 @@ std::vector<GenerationRun> SqlAgentRepository::recent(const std::string& student
     for (const auto& row : db_.exec(
              "SELECT id, student_id, created_at, engine, ok, block_count, details FROM generation_runs "
              "WHERE student_id = $1 ORDER BY created_at DESC LIMIT $2",
-             studentId, limit)) {
+             // PostgreSQL types a LIMIT parameter as bigint; a 4-byte int fails to bind.
+             studentId, static_cast<std::int64_t>(limit))) {
         GenerationRun run;
         run.id = row["id"].as<std::string>();
         run.studentId = row["student_id"].as<std::string>();
