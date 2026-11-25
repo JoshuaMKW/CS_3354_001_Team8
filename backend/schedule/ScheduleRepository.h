@@ -1,5 +1,7 @@
 #pragma once
 
+#include <mutex>
+
 #include "data-api/Database.h"
 #include "schedule/Schedule.h"
 
@@ -16,6 +18,10 @@ public:
 
 private:
     const data::Database& db_;
+    // Two replaces running at once (a request plus a background re-plan) would each
+    // delete, then both insert, leaving duplicate blocks on PostgreSQL. One server
+    // process serves all requests, so a process-wide lock is enough.
+    std::mutex replaceMutex_;
 };
 
 }  // namespace cramberry

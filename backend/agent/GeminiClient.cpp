@@ -25,6 +25,39 @@ constexpr const char* kScheduleInstruction =
     "Reply with JSON only, in this shape: "
     "{\"blocks\":[{\"assignmentId\":\"...\",\"title\":\"...\",\"day\":\"Mon\",\"start\":\"16:00\",\"end\":\"17:00\"}]}";
 
+// OpenRouter structured output: {"blocks":[{"assignmentId","title","day","start","end"}]}.
+Json::Value scheduleResponseFormat() {
+    Json::Value text;
+    text["type"] = "string";
+    Json::Value day = text;
+    for (const char* d : {"Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"}) day["enum"].append(d);
+    Json::Value clock = text;  // 24-hour "HH:MM"; without it Haiku sometimes wrote "4:00 PM"
+    clock["pattern"] = "^([01][0-9]|2[0-3]):[0-5][0-9]$";
+
+    Json::Value block;
+    block["type"] = "object";
+    block["additionalProperties"] = false;
+    for (const char* field : {"assignmentId", "title", "day", "start", "end"}) {
+        block["required"].append(field);
+        const std::string name = field;
+        block["properties"][field] = name == "day" ? day : (name == "start" || name == "end") ? clock : text;
+    }
+
+    Json::Value schema;
+    schema["type"] = "object";
+    schema["additionalProperties"] = false;
+    schema["required"].append("blocks");
+    schema["properties"]["blocks"]["type"] = "array";
+    schema["properties"]["blocks"]["items"] = block;
+
+    Json::Value format;
+    format["type"] = "json_schema";
+    format["json_schema"]["name"] = "study_schedule";
+    format["json_schema"]["strict"] = true;
+    format["json_schema"]["schema"] = schema;
+    return format;
+}
+
 std::string stripCodeFence(std::string text) {
     const auto first = text.find("```");
     if (first == std::string::npos) return text;
@@ -39,7 +72,6 @@ std::string stripCodeFence(std::string text) {
 GeminiClient::GeminiClient(GeminiConfig config)
     : config_(std::move(config)), loopThread_("gemini") {
     loopThread_.run();
-    client_ = drogon::HttpClient::newHttpClient(config_.host, loopThread_.getLoop());
 }
 
 std::string GeminiClient::schedulePrompt(const StudyPreferences& prefs,
@@ -89,37 +121,74 @@ std::string GeminiClient::reply(const std::string& context, const std::string& m
     return generate(instruction, message, false);
 }
 
-std::string GeminiClient::generate(const std::string& systemInstruction, const std::string& userText,
-                                   bool wantJson) {
+Json::Value GeminiClient::requestBody(const GeminiConfig& config, const std::string& systemInstruction,
+                                      const std::string& userText, bool wantJson) {
     Json::Value body;
+    if (config.api == GeminiConfig::Api::OpenRouter) {
+        body["model"] = config.model;
+        body["messages"][0]["role"] = "system";
+        body["messages"][0]["content"] = systemInstruction;
+        body["messages"][1]["role"] = "user";
+        body["messages"][1]["content"] = userText;
+        body["temperature"] = 0.2;
+        // A strict schema makes the provider enforce the reply's shape. Plain
+        // {"type":"json_object"} only asks for JSON, and Claude Haiku now and then
+        // answered with something that didn't parse, sending the plan to the fallback.
+        if (wantJson) body["response_format"] = scheduleResponseFormat();
+        if (!config.reasoning) body["reasoning"]["enabled"] = false;
+        return body;
+    }
     body["systemInstruction"]["parts"][0]["text"] = systemInstruction;
     body["contents"][0]["role"] = "user";
     body["contents"][0]["parts"][0]["text"] = userText;
     body["generationConfig"]["temperature"] = 0.2;
     if (wantJson) body["generationConfig"]["responseMimeType"] = "application/json";
+    return body;
+}
 
-    auto request = drogon::HttpRequest::newHttpJsonRequest(body);
+std::string GeminiClient::replyText(const GeminiConfig& config, const Json::Value& reply) {
+    std::string text;
+    if (config.api == GeminiConfig::Api::OpenRouter) {
+        const auto& content = reply["choices"][0]["message"]["content"];
+        if (content.isString()) text = content.asString();
+    } else {
+        for (const auto& part : reply["candidates"][0]["content"]["parts"]) {
+            if (part["text"].isString()) text += part["text"].asString();
+        }
+    }
+    if (text.empty()) throw std::runtime_error("the AI returned no text (blocked or empty answer)");
+    return text;
+}
+
+std::string GeminiClient::generate(const std::string& systemInstruction, const std::string& userText,
+                                   bool wantJson) {
+    const bool openRouter = config_.api == GeminiConfig::Api::OpenRouter;
+    const char* name = openRouter ? "OpenRouter" : "Gemini";
+
+    auto request = drogon::HttpRequest::newHttpJsonRequest(
+        requestBody(config_, systemInstruction, userText, wantJson));
     request->setMethod(drogon::Post);
-    request->setPath("/v1beta/models/" + config_.model + ":generateContent");
-    request->addHeader("x-goog-api-key", config_.apiKey);
+    if (openRouter) {
+        request->setPath("/api/v1/chat/completions");
+        request->addHeader("Authorization", "Bearer " + config_.apiKey);
+        request->addHeader("X-Title", "Cramberry");
+    } else {
+        request->setPath("/v1beta/models/" + config_.model + ":generateContent");
+        request->addHeader("x-goog-api-key", config_.apiKey);
+    }
 
-    const auto [result, response] = client_->sendRequest(request, config_.timeoutSeconds);
+    const auto client = drogon::HttpClient::newHttpClient(config_.host, loopThread_.getLoop());
+    const auto [result, response] = client->sendRequest(request, config_.timeoutSeconds);
     if (result != drogon::ReqResult::Ok || !response) {
-        throw std::runtime_error("Gemini request failed: " + drogon::to_string(result));
+        throw std::runtime_error(std::string(name) + " request failed: " + drogon::to_string(result));
     }
     if (response->statusCode() != drogon::k200OK) {
-        throw std::runtime_error("Gemini returned HTTP " +
+        throw std::runtime_error(std::string(name) + " returned HTTP " +
                                  std::to_string(static_cast<int>(response->statusCode())));
     }
     const auto reply = json::parse(response->body());
-    if (!reply) throw std::runtime_error("Gemini sent a response that isn't JSON");
-
-    std::string text;
-    for (const auto& part : (*reply)["candidates"][0]["content"]["parts"]) {
-        if (part["text"].isString()) text += part["text"].asString();
-    }
-    if (text.empty()) throw std::runtime_error("Gemini returned no text (blocked or empty answer)");
-    return text;
+    if (!reply) throw std::runtime_error(std::string(name) + " sent a response that isn't JSON");
+    return replyText(config_, *reply);
 }
 
 }  // namespace cramberry

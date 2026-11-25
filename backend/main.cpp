@@ -4,7 +4,8 @@
 //   CRAMBERRY_HOST, CRAMBERRY_PORT, CRAMBERRY_THREADS
 //   CRAMBERRY_DATABASE_URL      Supabase/PostgreSQL connection string; SQLite when unset
 //   CRAMBERRY_SQLITE_PATH       SQLite file (default cramberry.db)
-//   GEMINI_API_KEY, GEMINI_MODEL
+//   OPENROUTER_API_KEY, OPENROUTER_MODEL   any OpenRouter model, default Claude Haiku 5.5 (used if set)
+//   GEMINI_API_KEY, GEMINI_MODEL           Gemini through Google's API
 //   CRAMBERRY_CORS_ORIGIN       e.g. http://localhost:3000 for the Next.js frontend
 //   CRAMBERRY_AUTO_REPLAN       1 (default) re-plans after task or preference changes
 
@@ -121,15 +122,24 @@ int main() {
         SqlAgentRepository agentRuns(*db);
 
         // ---- AI ----
+        // OPENROUTER_API_KEY wins if both keys are set.
         std::unique_ptr<GeminiClient> gemini;
-        if (const auto key = env("GEMINI_API_KEY"); !key.empty()) {
+        std::string aiEngine;  // shown as "engine" on plans: the model ID without its provider
+        if (const auto key = env("OPENROUTER_API_KEY"); !key.empty()) {
+            auto config = GeminiConfig::openRouter(key, env("OPENROUTER_MODEL", "anthropic/claude-haiku-5.5"));
+            config.reasoning = env("OPENROUTER_REASONING", "0") == "1";
+            gemini = std::make_unique<GeminiClient>(config);
+            aiEngine = config.model.substr(config.model.find('/') + 1);  // "anthropic/claude-haiku-5.5" -> "claude-haiku-5.5"
+            LOG_INFO << "AI: " << config.model << " via OpenRouter";
+        } else if (const auto key = env("GEMINI_API_KEY"); !key.empty()) {
             GeminiConfig config;
             config.apiKey = key;
             config.model = env("GEMINI_MODEL", config.model);
             gemini = std::make_unique<GeminiClient>(config);
-            LOG_INFO << "Gemini: " << config.model;
+            aiEngine = config.model;
+            LOG_INFO << "AI: " << config.model << " via the Gemini API";
         } else {
-            LOG_WARN << "GEMINI_API_KEY is not set: schedules use the local planner and chat is off";
+            LOG_WARN << "Neither OPENROUTER_API_KEY nor GEMINI_API_KEY is set: schedules use the local planner and chat is off";
         }
 
         // Slow work (Gemini, password hashing) runs here, off Drogon's I/O threads.
@@ -140,7 +150,7 @@ int main() {
                                                      crypto::kDefaultPasswordIterations));
         AuthGuard guard(userController, slowWork);
         TaskController taskController(tasks);
-        AgentController agent(users, tasks, settings, schedules, agentRuns, gemini.get(), gemini.get());
+        AgentController agent(users, tasks, settings, schedules, agentRuns, gemini.get(), gemini.get(), aiEngine);
         BackgroundRegenerator regenerator(agent, slowWork);
         SettingsController settingsController(settings, schedules, regenerator);
         NotificationController notificationController(notificationSettings);

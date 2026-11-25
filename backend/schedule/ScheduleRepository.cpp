@@ -21,6 +21,7 @@ std::vector<StudyBlock> SqlScheduleRepository::getActiveStudyItems(const std::st
 }
 
 void SqlScheduleRepository::replace(const std::string& studentId, std::vector<StudyBlock> blocks) {
+    const std::lock_guard lock(replaceMutex_);
     auto tx = db_.begin();
     tx.exec("DELETE FROM study_blocks WHERE student_id = $1", studentId);
     int order = 0;

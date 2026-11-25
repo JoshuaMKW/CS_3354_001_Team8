@@ -19,7 +19,7 @@
 namespace cramberry {
 
 struct GeneratedPlan {
-    std::string engine;  // "gemini" or "local"
+    std::string engine;  // the AI model that made it, e.g. "claude-haiku-5.5", or "local"
     std::vector<StudyBlock> blocks;
     std::vector<std::string> warnings;
 };
@@ -32,7 +32,8 @@ class AgentController {
 public:
     AgentController(const IUserRepository& users, const ITaskRepository& tasks,
                     const ISettingsRepository& settings, IScheduleRepository& schedules,
-                    IAgentRepository& runs, IAiClient* gemini, IChatModel* chat);
+                    IAgentRepository& runs, IAiClient* gemini, IChatModel* chat,
+                    std::string aiEngine = "gemini");
 
     // Blocks the calling thread while Gemini works; call from a worker thread.
     Outcome<GeneratedPlan> generate(const std::string& studentId, std::optional<Day> onlyDay,
@@ -50,6 +51,7 @@ private:
     IAgentRepository& runs_;
     IAiClient* gemini_;
     IChatModel* chat_;
+    std::string aiEngine_;  // label for plans and runs made by gemini_
 };
 
 // "Plan Updating" from the SOW: rebuilds a student's schedule in the background after

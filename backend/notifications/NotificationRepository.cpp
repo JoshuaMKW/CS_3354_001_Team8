@@ -62,7 +62,8 @@ std::vector<InboxItem> SqlInbox::list(const std::string& studentId, bool unreadO
     const auto rows = db_.exec(
         "SELECT id, channel, subject, body, sent_at, is_read FROM notifications "
         "WHERE student_id = $1 AND (is_read = 0 OR $2 = 0) ORDER BY sent_at DESC LIMIT $3",
-        studentId, static_cast<int>(unreadOnly), limit);
+        // PostgreSQL types a LIMIT parameter as bigint; a 4-byte int fails to bind.
+        studentId, static_cast<int>(unreadOnly), static_cast<std::int64_t>(limit));
     for (const auto& row : rows) {
         InboxItem item;
         item.id = row["id"].as<std::string>();
