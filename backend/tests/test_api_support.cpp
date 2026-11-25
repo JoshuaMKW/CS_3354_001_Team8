@@ -87,6 +87,48 @@ TEST(Gemini, PromptCarriesPreferencesAndAssignments) {
     EXPECT_THAT(prompt, HasSubstr(R"("sessionMinutes":60)"));
 }
 
+TEST(Gemini, OpenRouterRequestUsesChatCompletionsShape) {
+    const auto config = GeminiConfig::openRouter("key");
+    EXPECT_EQ(config.host, "https://openrouter.ai");
+    EXPECT_EQ(config.model, "anthropic/claude-haiku-5.5");
+
+    const auto body = GeminiClient::requestBody(config, "rules", "plan my week", true);
+    EXPECT_EQ(body["model"].asString(), "anthropic/claude-haiku-5.5");
+    EXPECT_EQ(body["messages"][0]["role"].asString(), "system");
+    EXPECT_EQ(body["messages"][0]["content"].asString(), "rules");
+    EXPECT_EQ(body["messages"][1]["role"].asString(), "user");
+    EXPECT_EQ(body["messages"][1]["content"].asString(), "plan my week");
+    EXPECT_EQ(body["response_format"]["type"].asString(), "json_schema");
+    EXPECT_TRUE(body["response_format"]["json_schema"]["strict"].asBool());
+    const auto& block = body["response_format"]["json_schema"]["schema"]["properties"]["blocks"]["items"];
+    EXPECT_EQ(block["required"].size(), 5u);
+    EXPECT_EQ(block["properties"]["day"]["enum"][0].asString(), "Mon");
+    EXPECT_EQ(block["properties"]["start"]["pattern"].asString(), "^([01][0-9]|2[0-3]):[0-5][0-9]$");
+    EXPECT_FALSE(body.isMember("contents"));
+    EXPECT_FALSE(body["reasoning"]["enabled"].asBool());
+
+    EXPECT_FALSE(GeminiClient::requestBody(config, "rules", "hi", false).isMember("response_format"));
+
+    auto reasoning = config;
+    reasoning.reasoning = true;
+    EXPECT_FALSE(GeminiClient::requestBody(reasoning, "rules", "hi", false).isMember("reasoning"));
+}
+
+TEST(Gemini, ReadsTextFromEitherApi) {
+    const auto openRouterReply = json::parse(R"({"choices":[{"message":{"content":"hello"}}]})");
+    ASSERT_TRUE(openRouterReply);
+    EXPECT_EQ(GeminiClient::replyText(GeminiConfig::openRouter("key"), *openRouterReply), "hello");
+
+    const auto geminiReply =
+        json::parse(R"({"candidates":[{"content":{"parts":[{"text":"hel"},{"text":"lo"}]}}]})");
+    ASSERT_TRUE(geminiReply);
+    EXPECT_EQ(GeminiClient::replyText(GeminiConfig{}, *geminiReply), "hello");
+
+    const auto empty = json::parse(R"({"choices":[]})");
+    ASSERT_TRUE(empty);
+    EXPECT_THROW(GeminiClient::replyText(GeminiConfig::openRouter("key"), *empty), std::runtime_error);
+}
+
 // ---------------------------------------------------------------- Agent
 
 class FixedAi : public IAiClient {
@@ -132,6 +174,18 @@ TEST_F(AgentTest, SavesAValidGeminiSchedule) {
     EXPECT_EQ(plan.value().engine, "gemini");
     EXPECT_EQ(schedules.getActiveStudyItems(alice), gemini.reply);
     EXPECT_TRUE(agentRuns.recent(alice, 5).at(0).ok);
+}
+
+TEST_F(AgentTest, LabelsPlansWithTheConfiguredModel) {
+    AgentController haiku{users, taskRepo, settings, schedules, agentRuns, &gemini, nullptr, "claude-haiku-5.5"};
+    ASSERT_TRUE(settings.save(alice, weekdayEvenings()));
+    const auto essay = addTask(alice, "Essay", kNow + 2 * kDay, 60);
+    gemini.reply = {{"Essay", essay.id, {Day::Mon, hm(16), hm(17)}}};
+
+    const auto plan = haiku.generate(alice, std::nullopt, kNow);
+    ASSERT_TRUE(plan.ok()) << plan.error().message;
+    EXPECT_EQ(plan.value().engine, "claude-haiku-5.5");
+    EXPECT_EQ(agentRuns.recent(alice, 5).at(0).engine, "claude-haiku-5.5");
 }
 
 TEST_F(AgentTest, FallsBackToLocalPlannerWhenGeminiBreaksTheRules) {

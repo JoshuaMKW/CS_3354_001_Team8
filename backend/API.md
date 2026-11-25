@@ -120,7 +120,7 @@ No sign-in needed.
 | :--- | :--- |
 | `status` | `"ok"` when the database answers, otherwise `"degraded"` |
 | `database` | Whether the database answered |
-| `ai` | Whether a Gemini API key is configured |
+| `ai` | Whether an AI key (OpenRouter or Gemini) is configured |
 
 ---
 
@@ -433,7 +433,7 @@ After saving, the schedule is rebuilt in the background.
 
 ### `POST /api/agent/generate`
 
-Builds and saves the student's study plan for the current week (Monday–Sunday, local time). This can take up to about 10 seconds when Gemini is used.
+Builds and saves the student's study plan for the current week (Monday–Sunday, local time). This can take up to about 10 seconds when the AI model is used.
 
 Body (optional): `{"day": "Wed"}`. When `day` is given, only that day's study hours are used. The saved schedule is still **replaced** by the result.
 
@@ -442,16 +442,16 @@ Body (optional): `{"day": "Wed"}`. When `day` is given, only that day's study ho
 - Tasks already overdue, or due after this week ends, are treated as due at the end of Sunday, so they get time wherever it fits.
 
 **How the plan is made:**
-1. If `GEMINI_API_KEY` is set, Gemini proposes a plan.
+1. If `OPENROUTER_API_KEY` (default model Claude Haiku 5.5) or `GEMINI_API_KEY` is set, the AI model proposes a plan.
 2. The proposal is checked against the preferences: inside study hours, no personal time, session length, daily maximum, breaks, every task scheduled before it's due, and no overlaps.
-3. If Gemini isn't configured, fails, or breaks a rule, the built-in local planner (earliest deadline first) is used instead. The reasons are listed in `warnings`.
+3. If the AI isn't configured, fails, or breaks a rule, the built-in local planner (earliest deadline first) is used instead. The reasons are listed in `warnings`.
 4. Only a plan that passes every check is saved. Every attempt is recorded (see `GET /api/agent/runs`).
 
 **200 OK**
 
 ```json
 {
-  "engine": "gemini",
+  "engine": "claude-haiku-5.5",
   "schedule": [{"title": "CS 3354 Assignment", "assignmentId": "92b7b492-…", "day": "Mon", "start": "16:00", "end": "17:00"}],
   "warnings": []
 }
@@ -459,8 +459,8 @@ Body (optional): `{"day": "Wed"}`. When `day` is given, only that day's study ho
 
 | Field | Meaning |
 | :--- | :--- |
-| `engine` | `"gemini"` or `"local"` |
-| `warnings` | Why Gemini's plan was rejected, and tasks that only partly fit, e.g. `"Only 60 of 240 min for \"Project\" fit before it is due"` |
+| `engine` | The AI model that made the plan (e.g. `"claude-haiku-5.5"`, the `OPENROUTER_MODEL` without its provider) or `"local"` |
+| `warnings` | Why the AI's plan was rejected, and tasks that only partly fit, e.g. `"Only 60 of 240 min for \"Project\" fit before it is due"` |
 
 **422 Unprocessable Entity**: the saved schedule is left unchanged. Possible messages:
 - `"Set your study preferences before generating a schedule"`
@@ -483,7 +483,7 @@ Body: `{"message": "What should I work on first today?"}`. The message must be 1
 
 **Errors:**
 - `400` for an empty or too-long message
-- `503` `"The AI assistant isn't set up on this server"` (no Gemini key)
+- `503` `"The AI assistant isn't set up on this server"` (no AI key)
 - `503` `"The AI assistant is unavailable right now. Your tasks and schedule are unaffected."`
 
 ### `GET /api/agent/runs`
@@ -494,7 +494,7 @@ The student's 20 most recent generation attempts, newest first.
 
 ```json
 [
-  {"id": "…", "createdAt": "2026-11-23T20:29:00Z", "engine": "gemini", "ok": false, "blockCount": 0,
+  {"id": "…", "createdAt": "2026-11-23T20:29:00Z", "engine": "claude-haiku-5.5", "ok": false, "blockCount": 0,
    "details": ["\"Essay\" (Sat 2:00 AM-5:00 AM) is outside study hours"]},
   {"id": "…", "createdAt": "2026-11-23T20:29:00Z", "engine": "local", "ok": true, "blockCount": 3, "details": []}
 ]

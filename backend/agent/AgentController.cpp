@@ -26,7 +26,7 @@ public:
             return inner_.proposeSchedule(prefs, assignments);
         } catch (const std::exception& e) {
             error = e.what();
-            LOG_WARN << "Gemini schedule generation failed: " << e.what();
+            LOG_WARN << "AI schedule generation failed: " << e.what();
             throw;
         }
     }
@@ -47,14 +47,16 @@ std::string trim(const std::string& text) {
 
 AgentController::AgentController(const IUserRepository& users, const ITaskRepository& tasks,
                                  const ISettingsRepository& settings, IScheduleRepository& schedules,
-                                 IAgentRepository& runs, IAiClient* gemini, IChatModel* chat)
+                                 IAgentRepository& runs, IAiClient* gemini, IChatModel* chat,
+                                 std::string aiEngine)
     : users_(users),
       tasks_(tasks),
       settings_(settings),
       schedules_(schedules),
       runs_(runs),
       gemini_(gemini),
-      chat_(chat) {}
+      chat_(chat),
+      aiEngine_(std::move(aiEngine)) {}
 
 Outcome<GeneratedPlan> AgentController::generate(const std::string& studentId,
                                                  std::optional<Day> onlyDay, Timestamp now) {
@@ -85,8 +87,8 @@ Outcome<GeneratedPlan> AgentController::generate(const std::string& studentId,
 
     if (gemini_) {
         RecordingAi gemini(*gemini_);
-        if (auto plan = attempt(gemini, "gemini")) return std::move(*plan);
-        if (!gemini.error.empty()) warnings.push_back("gemini: " + gemini.error);
+        if (auto plan = attempt(gemini, aiEngine_)) return std::move(*plan);
+        if (!gemini.error.empty()) warnings.push_back(aiEngine_ + ": " + gemini.error);
     }
 
     LocalPlanner planner;
@@ -136,7 +138,7 @@ Outcome<std::string> AgentController::chat(const std::string& studentId, const s
     try {
         return chat_->reply(context, question);
     } catch (const std::exception& e) {
-        LOG_WARN << "Gemini chat failed: " << e.what();
+        LOG_WARN << "AI chat failed: " << e.what();
         return Error{ErrorCode::Unavailable,
                      "The AI assistant is unavailable right now. Your tasks and schedule are unaffected.",
                      {}};
