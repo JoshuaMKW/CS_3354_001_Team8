@@ -9,6 +9,9 @@ option(CRAMBERRY_BUILD_SERVER "Build the Drogon REST API server (needs Drogon, e
 # Use-case logic with no third-party dependencies. Builds everywhere.
 add_library(cramberry_backend
     agent/Agent.cpp
+    agent/ScheduleGenerationService.cpp
+    api/SchedulingRequestController.cpp
+    api/StudentDataController.cpp
     agent/NKStudyScheduleService.cpp
     notifications/NotificationController.cpp
     notifications/ReminderScheduler.cpp
@@ -26,7 +29,14 @@ FetchContent_Declare(
     DOWNLOAD_EXTRACT_TIMESTAMP TRUE
 )
 set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)  # needed for MSVC
-FetchContent_MakeAvailable(googletest)
+# nlohmann/json parses Gemini's JSON reply in UC-12 Validate AI Response (AA).
+FetchContent_Declare(
+    nlohmann_json
+    URL https://github.com/nlohmann/json/releases/download/v3.11.3/json.tar.xz
+    DOWNLOAD_EXTRACT_TIMESTAMP TRUE
+)
+FetchContent_MakeAvailable(googletest nlohmann_json)
+target_link_libraries(cramberry_backend PRIVATE nlohmann_json::nlohmann_json)
 
 enable_testing()
 include(GoogleTest)
@@ -34,6 +44,7 @@ include(GoogleTest)
 add_executable(cramberry_tests
     tests/test_manage_study_preferences.cpp
     tests/test_notification_settings.cpp
+    tests/test_aa.cpp
 )
 target_link_libraries(cramberry_tests PRIVATE cramberry_backend GTest::gmock_main)
 gtest_discover_tests(cramberry_tests)
