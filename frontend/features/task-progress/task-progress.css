@@ -1,0 +1,11 @@
+.cb-progress { font: 1rem/1.5 system-ui,sans-serif; color: #203327; background: #fff; padding: 1rem; border: 1px solid #b8c9bb; border-radius: 1rem; }
+.cb-progress__filters { display: flex; flex-wrap: wrap; align-items: end; gap: .75rem; }
+.cb-progress label { display: flex; flex-direction: column; gap: .25rem; }
+.cb-progress button,.cb-progress input,.cb-progress select { max-width: 100%; box-sizing: border-box; font: inherit; padding: .45rem; border: 1px solid #526c5b; border-radius: .4rem; color: #203327; background: #fff; }
+.cb-progress button { background: #e8f1e9; cursor: pointer; }
+.cb-progress :focus-visible { outline: 3px solid #315fbd; outline-offset: 2px; }
+.cb-progress__list { list-style: none; padding: 0; }
+.cb-progress__task { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .75rem; border-top: 1px solid #b8c9bb; padding: .75rem 0; overflow-wrap: anywhere; }
+.cb-progress__task p { margin: .25rem 0; }
+.cb-progress__overdue { color: #9b2020; font-weight: 700; }
+.cb-progress__summary { display: inline-block; vertical-align: top; padding: .75rem; margin: .25rem; border: 1px solid #b8c9bb; border-radius: .5rem; min-width: 10rem; max-width: 100%; box-sizing: border-box; overflow-wrap: anywhere; }
