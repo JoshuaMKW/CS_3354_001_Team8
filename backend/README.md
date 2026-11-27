@@ -107,8 +107,18 @@ Every route except register, login and health needs `Authorization: Bearer <toke
 | [`tests/test_local_planner.cpp`](tests/test_local_planner.cpp) | Fallback planner and the mapping from tasks to the weekly plan |
 | [`tests/test_repositories.cpp`](tests/test_repositories.cpp) | SQL repositories, transactions, reminders into the inbox |
 | [`tests/test_api_support.cpp`](tests/test_api_support.cpp) | JSON, Gemini answer handling, AI fallback, moving blocks, export, dashboard |
+| [`tests/test_schedule_acceptance.cpp`](tests/test_schedule_acceptance.cpp) | KT acceptance cases TC-08-01 to TC-08-04 and TC-09-01 to TC-09-06 |
 
 The API tests use a fresh in-memory SQLite database per test. In-memory fakes stand in for Gemini and the Notification Service, so the tests never touch real data or the network. The JA test cases are written up in [`docs/testing/JA_Test_Cases.md`](../docs/testing/JA_Test_Cases.md).
+
+Build and run only the schedule acceptance tests from the repository root:
+
+```powershell
+cmake --build backend\out\build --config Debug --target cramberry_schedule_acceptance_tests
+.\backend\out\build\Debug\cramberry_schedule_acceptance_tests.exe
+```
+
+The original API tests remain in the separate `cramberry_api_tests` executable.
 
 ## Known limits
 
