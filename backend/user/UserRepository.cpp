@@ -65,6 +65,8 @@ void SqlUserRepository::update(const Student& student) {
 void SqlUserRepository::remove(const std::string& studentId) {
     // Delete child rows explicitly rather than relying on ON DELETE CASCADE alone,
     // so a database without foreign-key enforcement still ends up clean (NFR-7).
+    db_.exec("DELETE FROM schedule_shares WHERE owner_student_id = $1 OR recipient_student_id = $1",
+             studentId);
     static constexpr std::array kOwnedTables = {
         "sessions",      "generation_runs", "notifications",         "study_blocks",
         "tasks",         "courses",         "notification_settings", "study_preferences",

@@ -6,7 +6,7 @@ The folder layout follows the Development View. Each module has a **repository**
 | :--- | :--- |
 | `user/` | Accounts, sign-in sessions, password hashing (FR-1, FR-2, FR-14) |
 | `tasks/` | Courses, assignments, exams, status, filters, weekly report (UC-13, UC-14) |
-| `schedule/` | Accepted study schedule, moving blocks, `.ics` export, dashboard (UC-4, UC-6, UC-8) |
+| `schedule/` | Accepted study schedule, sharing, moving blocks, `.ics` export, dashboard (UC-4, UC-6, UC-8, UC-9) |
 | `agent/` | Gemini client, local fallback planner, schedule generation, chatbot (UC-5, UC-7, UC-12) |
 | `settings/` | Study preferences (UC-15) |
 | `notifications/` | Notification settings, deadline reminders, in-app inbox (UC-16) |
@@ -91,6 +91,8 @@ Every route except register, login and health needs `Authorization: Bearer <toke
 | `GET /api/agent/runs` | Recent generation attempts |
 | `GET`, `DELETE /api/schedule`, `PATCH /api/schedule/blocks` | View, clear, or move a block |
 | `GET /api/schedule/export.ics` | Download the plan and deadlines as iCalendar |
+| `POST`, `GET /api/schedule/shares`; `DELETE /api/schedule/shares/{shareId}` | Share with a registered recipient, list, or revoke access |
+| `GET /api/schedule/shared-with-me`, `GET /api/schedule/shared-with-me/{shareId}` | List shared schedules and view the latest shared schedule |
 | `GET /api/dashboard` | Today's blocks, upcoming and overdue tasks, counts |
 | `GET /api/health` | Database and AI status |
 
@@ -113,4 +115,5 @@ The API tests use a fresh in-memory SQLite database per test. In-memory fakes st
 - Email and SMS reminders are stored in the in-app inbox and logged. Delivering them needs a provider plugged into `InboxGateway`.
 - Reminder de-duplication is held in memory, so restarting the server can resend a reminder that is still inside its window.
 - Time zones are fixed UTC offsets, with no daylight-saving rules.
-- MFA (FR-5), schedule sharing (FR-9) and syllabus upload (UC-3) are not implemented yet.
+- Shared schedule views fetch the owner's latest schedule on each API request. Push-based live refresh in a frontend client is not implemented.
+- MFA (FR-5) and syllabus upload (UC-3) are not implemented yet.

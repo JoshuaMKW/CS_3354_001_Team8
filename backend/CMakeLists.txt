@@ -74,6 +74,9 @@ if(CRAMBERRY_BUILD_SERVER AND Drogon_FOUND AND OpenSSL_FOUND)
         schedule/ScheduleController.cpp
         schedule/ScheduleRepository.cpp
         schedule/ScheduleRoutes.cpp
+        schedule/ScheduleShareRepository.cpp
+        schedule/ScheduleSharing.cpp
+        schedule/ScheduleSharingRoutes.cpp
         settings/SettingsRepository.cpp
         settings/SettingsRoutes.cpp
         tasks/Task.cpp
