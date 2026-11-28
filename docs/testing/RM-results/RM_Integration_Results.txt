@@ -1,0 +1,121 @@
+Test project /Users/risha0617/repos/CS_3354_001_Team8/backend/out/rm-build
+      Start  1: ManageStudyPreferences.TC_15_01_SaveValidStudyPreferences
+ 1/58 Test  #1: ManageStudyPreferences.TC_15_01_SaveValidStudyPreferences .....................   Passed    0.01 sec
+      Start  2: ManageStudyPreferences.TC_15_02_PersonalTimeConflictIsFlaggedNotOverwritten
+ 2/58 Test  #2: ManageStudyPreferences.TC_15_02_PersonalTimeConflictIsFlaggedNotOverwritten ...   Passed    0.01 sec
+      Start  3: ManageStudyPreferences.TC_15_03_BreakLongerThanSessionIsRejected
+ 3/58 Test  #3: ManageStudyPreferences.TC_15_03_BreakLongerThanSessionIsRejected ..............   Passed    0.01 sec
+      Start  4: ScheduleFollowsPreferences.TC_15_04_GeneratedScheduleFollowsPreferences
+ 4/58 Test  #4: ScheduleFollowsPreferences.TC_15_04_GeneratedScheduleFollowsPreferences .......   Passed    0.01 sec
+      Start  5: ScheduleFollowsPreferences.TC_15_04_ScheduleThatBreaksPreferencesIsRejected
+ 5/58 Test  #5: ScheduleFollowsPreferences.TC_15_04_ScheduleThatBreaksPreferencesIsRejected ...   Passed    0.01 sec
+      Start  6: NotificationSettingsTest.TC_16_01_OptInToEmailReminders
+ 6/58 Test  #6: NotificationSettingsTest.TC_16_01_OptInToEmailReminders .......................   Passed    0.01 sec
+      Start  7: NotificationSettingsTest.TC_16_02_OptOutStopsAllReminders
+ 7/58 Test  #7: NotificationSettingsTest.TC_16_02_OptOutStopsAllReminders .....................   Passed    0.01 sec
+      Start  8: NotificationSettingsTest.TC_16_03_InvalidPhoneNumberIsRejected
+ 8/58 Test  #8: NotificationSettingsTest.TC_16_03_InvalidPhoneNumberIsRejected ................   Passed    0.01 sec
+      Start  9: NotificationSettingsTest.TC_16_04_DeadlineReminderIsSentOnceOnTime
+ 9/58 Test  #9: NotificationSettingsTest.TC_16_04_DeadlineReminderIsSentOnceOnTime ............   Passed    0.01 sec
+      Start 10: AATests.TC_10_01_ValidRequestIsAccepted
+10/58 Test #10: AATests.TC_10_01_ValidRequestIsAccepted .......................................   Passed    0.01 sec
+      Start 11: AATests.TC_11_01_SaveAndUpdateOwnRecords
+11/58 Test #11: AATests.TC_11_01_SaveAndUpdateOwnRecords ......................................   Passed    0.01 sec
+      Start 12: AATests.TC_12_01_ScheduleThatBreaksRulesIsRejected
+12/58 Test #12: AATests.TC_12_01_ScheduleThatBreaksRulesIsRejected ............................   Passed    0.01 sec
+      Start 13: AATests.TC_NFR18_01_BackendRequestsFinishWithin2Seconds
+13/58 Test #13: AATests.TC_NFR18_01_BackendRequestsFinishWithin2Seconds .......................   Passed    0.20 sec
+      Start 14: AATests.TC_NFR19_01_StudentsCantReachEachOthersData
+14/58 Test #14: AATests.TC_NFR19_01_StudentsCantReachEachOthersData ...........................   Passed    0.01 sec
+      Start 15: Json.ParsesAndFormatsTimes
+15/58 Test #15: Json.ParsesAndFormatsTimes ....................................................   Passed    0.03 sec
+      Start 16: Json.PreferencesRoundTripAndReportBadFields
+16/58 Test #16: Json.PreferencesRoundTripAndReportBadFields ...................................   Passed    0.01 sec
+      Start 17: Gemini.ParsesScheduleWithOrWithoutCodeFences
+17/58 Test #17: Gemini.ParsesScheduleWithOrWithoutCodeFences ..................................   Passed    0.01 sec
+      Start 18: Gemini.RejectsUnusableAnswers
+18/58 Test #18: Gemini.RejectsUnusableAnswers .................................................   Passed    0.01 sec
+      Start 19: Gemini.PromptCarriesPreferencesAndAssignments
+19/58 Test #19: Gemini.PromptCarriesPreferencesAndAssignments .................................   Passed    0.01 sec
+      Start 20: Gemini.OpenRouterRequestUsesChatCompletionsShape
+20/58 Test #20: Gemini.OpenRouterRequestUsesChatCompletionsShape ..............................   Passed    0.01 sec
+      Start 21: Gemini.ReadsTextFromEitherApi
+21/58 Test #21: Gemini.ReadsTextFromEitherApi .................................................   Passed    0.01 sec
+      Start 22: AgentTest.NeedsPreferencesAndTasks
+22/58 Test #22: AgentTest.NeedsPreferencesAndTasks ............................................   Passed    0.02 sec
+      Start 23: AgentTest.SavesAValidGeminiSchedule
+23/58 Test #23: AgentTest.SavesAValidGeminiSchedule ...........................................   Passed    0.01 sec
+      Start 24: AgentTest.LabelsPlansWithTheConfiguredModel
+24/58 Test #24: AgentTest.LabelsPlansWithTheConfiguredModel ...................................   Passed    0.01 sec
+      Start 25: AgentTest.FallsBackToLocalPlannerWhenGeminiBreaksTheRules
+25/58 Test #25: AgentTest.FallsBackToLocalPlannerWhenGeminiBreaksTheRules .....................   Passed    0.01 sec
+      Start 26: AgentTest.GeminiOutageDoesNotStopPlanningOrTouchTheSavedSchedule
+26/58 Test #26: AgentTest.GeminiOutageDoesNotStopPlanningOrTouchTheSavedSchedule ..............   Passed    0.01 sec
+      Start 27: AgentTest.ImpossiblePlanIsRejectedAndOldScheduleKept
+27/58 Test #27: AgentTest.ImpossiblePlanIsRejectedAndOldScheduleKept ..........................   Passed    0.01 sec
+      Start 28: AgentTest.ChatIsUnavailableWithoutGeminiOrWhenItFails
+28/58 Test #28: AgentTest.ChatIsUnavailableWithoutGeminiOrWhenItFails .........................   Passed    0.01 sec
+      Start 29: ScheduleTest.MoveBlockKeepsPreferencesValid
+29/58 Test #29: ScheduleTest.MoveBlockKeepsPreferencesValid ...................................   Passed    0.01 sec
+      Start 30: ScheduleTest.ExportsICalendar
+30/58 Test #30: ScheduleTest.ExportsICalendar .................................................   Passed    0.01 sec
+      Start 31: ScheduleTest.DashboardShowsTodayUpcomingAndOverdue
+31/58 Test #31: ScheduleTest.DashboardShowsTodayUpcomingAndOverdue ............................   Passed    0.01 sec
+      Start 32: LocalPlanner.ScheduleFollowsEveryPreference
+32/58 Test #32: LocalPlanner.ScheduleFollowsEveryPreference ...................................   Passed    0.01 sec
+      Start 33: LocalPlanner.EarliestDeadlineGoesFirst
+33/58 Test #33: LocalPlanner.EarliestDeadlineGoesFirst ........................................   Passed    0.01 sec
+      Start 34: LocalPlanner.ReportsWorkThatDoesNotFitAndAgentRejectsUnscheduledTasks
+34/58 Test #34: LocalPlanner.ReportsWorkThatDoesNotFitAndAgentRejectsUnscheduledTasks .........   Passed    0.01 sec
+      Start 35: Planning.WeekIsTheStudentsLocalMonday
+35/58 Test #35: Planning.WeekIsTheStudentsLocalMonday .........................................   Passed    0.01 sec
+      Start 36: Planning.PlannerAssignmentsCoverOverdueAndTheNextSevenDays
+36/58 Test #36: Planning.PlannerAssignmentsCoverOverdueAndTheNextSevenDays ....................   Passed    0.01 sec
+      Start 37: Database.TranslatesPlaceholdersForSqlite
+37/58 Test #37: Database.TranslatesPlaceholdersForSqlite ......................................   Passed    0.01 sec
+      Start 38: Repositories.StudyPreferencesRoundTrip
+38/58 Test #38: Repositories.StudyPreferencesRoundTrip ........................................   Passed    0.01 sec
+      Start 39: Repositories.NotificationSettingsRoundTrip
+39/58 Test #39: Repositories.NotificationSettingsRoundTrip ....................................   Passed    0.01 sec
+      Start 40: Repositories.ScheduleReplaceSwapsTheWholeScheduleForOneStudentOnly
+40/58 Test #40: Repositories.ScheduleReplaceSwapsTheWholeScheduleForOneStudentOnly ............   Passed    0.01 sec
+      Start 41: Repositories.FailedTransactionLeavesDataUnchanged
+41/58 Test #41: Repositories.FailedTransactionLeavesDataUnchanged .............................   Passed    0.01 sec
+      Start 42: Repositories.InboxIsPerStudent
+42/58 Test #42: Repositories.InboxIsPerStudent ................................................   Passed    0.01 sec
+      Start 43: Repositories.GenerationRunsAreRecorded
+43/58 Test #43: Repositories.GenerationRunsAreRecorded ........................................   Passed    0.01 sec
+      Start 44: Repositories.ReminderSchedulerDeliversDueTasksToTheInbox
+44/58 Test #44: Repositories.ReminderSchedulerDeliversDueTasksToTheInbox ......................   Passed    0.01 sec
+      Start 45: Tasks.CreateValidatesInput
+45/58 Test #45: Tasks.CreateValidatesInput ....................................................   Passed    0.01 sec
+      Start 46: Tasks.StudentsNeverSeeOrChangeEachOthersTasks
+46/58 Test #46: Tasks.StudentsNeverSeeOrChangeEachOthersTasks .................................   Passed    0.01 sec
+      Start 47: Tasks.CompletingSetsCompletedAtAndReopeningClearsIt
+47/58 Test #47: Tasks.CompletingSetsCompletedAtAndReopeningClearsIt ...........................   Passed    0.01 sec
+      Start 48: Tasks.FiltersByCourseDateStatusAndOverdue
+48/58 Test #48: Tasks.FiltersByCourseDateStatusAndOverdue .....................................   Passed    0.01 sec
+      Start 49: Tasks.DeletingACourseKeepsItsTasks
+49/58 Test #49: Tasks.DeletingACourseKeepsItsTasks ............................................   Passed    0.01 sec
+      Start 50: Tasks.WeeklyReportSplitsCompletedOverdueAndRemaining
+50/58 Test #50: Tasks.WeeklyReportSplitsCompletedOverdueAndRemaining ..........................   Passed    0.01 sec
+      Start 51: Crypto.PasswordHashUsesTheFixedFormatAndVerifies
+51/58 Test #51: Crypto.PasswordHashUsesTheFixedFormatAndVerifies ..............................   Passed    0.01 sec
+      Start 52: Crypto.IdsAndTokensAreRandomAndWellFormed
+52/58 Test #52: Crypto.IdsAndTokensAreRandomAndWellFormed .....................................   Passed    0.01 sec
+      Start 53: Users.RegisterThenLogInAndOut
+53/58 Test #53: Users.RegisterThenLogInAndOut .................................................   Passed    0.01 sec
+      Start 54: Users.SessionsExpireAfterSevenDays
+54/58 Test #54: Users.SessionsExpireAfterSevenDays ............................................   Passed    0.01 sec
+      Start 55: Users.RejectsBadInputAndDuplicateEmail
+55/58 Test #55: Users.RejectsBadInputAndDuplicateEmail ........................................   Passed    0.01 sec
+      Start 56: Users.WrongPasswordAndUnknownEmailLookTheSame
+56/58 Test #56: Users.WrongPasswordAndUnknownEmailLookTheSame .................................   Passed    0.01 sec
+      Start 57: Users.UpdateProfileValidates
+57/58 Test #57: Users.UpdateProfileValidates ..................................................   Passed    0.01 sec
+      Start 58: Users.DeleteAccountRemovesEverythingItOwns
+58/58 Test #58: Users.DeleteAccountRemovesEverythingItOwns ....................................   Passed    0.02 sec
+
+100% tests passed out of 58
+
+Total Test time (real) =   0.93 sec

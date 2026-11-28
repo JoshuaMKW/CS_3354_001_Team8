@@ -1,0 +1,22 @@
+Running main() from gmock_main.cc
+Note: Google Test filter = Tasks.*
+[==========] Running 6 tests from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 6 tests from Tasks
+[ RUN      ] Tasks.CreateValidatesInput
+[       OK ] Tasks.CreateValidatesInput (5 ms)
+[ RUN      ] Tasks.StudentsNeverSeeOrChangeEachOthersTasks
+[       OK ] Tasks.StudentsNeverSeeOrChangeEachOthersTasks (1 ms)
+[ RUN      ] Tasks.CompletingSetsCompletedAtAndReopeningClearsIt
+[       OK ] Tasks.CompletingSetsCompletedAtAndReopeningClearsIt (1 ms)
+[ RUN      ] Tasks.FiltersByCourseDateStatusAndOverdue
+[       OK ] Tasks.FiltersByCourseDateStatusAndOverdue (1 ms)
+[ RUN      ] Tasks.DeletingACourseKeepsItsTasks
+[       OK ] Tasks.DeletingACourseKeepsItsTasks (1 ms)
+[ RUN      ] Tasks.WeeklyReportSplitsCompletedOverdueAndRemaining
+[       OK ] Tasks.WeeklyReportSplitsCompletedOverdueAndRemaining (1 ms)
+[----------] 6 tests from Tasks (13 ms total)
+
+[----------] Global test environment tear-down
+[==========] 6 tests from 1 test suite ran. (13 ms total)
+[  PASSED  ] 6 tests.
