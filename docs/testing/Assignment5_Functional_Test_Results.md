@@ -12,8 +12,8 @@ Every test case below ran against the running Cramberry application. The `crambe
 | Jonathan Lee (JO) | UC-3, UC-4 | 8 | 4 | 4 | [JO-results](JO-results/JO-live-results-2026-11-27.md) |
 | Kevin Tran (KT) | UC-8, UC-9 | 10 | 7 | 3 | [KT-results](KT-results/KT-live-results-2026-11-27.md) |
 | Nishanth Kandula (NK) | UC-5, UC-7 | 8 | 4 | 4 | [NK-results](NK-results/NK-live-results-2026-11-27.md) |
-| Joshua Alston (JA) | UC-15, UC-16 | JA_RUN | JA_PASS | JA_FAIL | [JA-results](JA-results/JA-live-results-2026-11-27.md) |
-| **Team** | | **TEAM_RUN** | **TEAM_PASS** | **TEAM_FAIL** | |
+| Joshua Alston (JA) | UC-15, UC-16 | 6 | 6 | 0 | [JA-results](JA-results/JA-live-results-2026-11-27.md) |
+| **Team** | | **51** | **40** | **11** | |
 
 ## How to run
 
@@ -21,6 +21,7 @@ Each script starts its own server from `backend/out/build/cramberry_server` on i
 
 ```bash
 pip install "psycopg[binary]" playwright==1.49.1    # the JA and JO scripts need Playwright
+export SKIP_REMINDER_WAITS=1                         # JA script: skips TC-16-02 and TC-16-04
 TESTER="Your Name (XX)" python3 backend/tests/live/re_live_tests.py
 TESTER="Your Name (XX)" python3 backend/tests/live/jo_live_tests.py
 TESTER="Your Name (XX)" python3 backend/tests/live/kt_live_tests.py
@@ -108,7 +109,18 @@ Failures:
 - **TC-07-01.** The reply names CS 3354 Project but gives its deadline as "2026-11-30 at 05:59 UTC", a Monday, for a task due Sunday 11:59 PM local time. The chat sends due times to the AI in UTC without the student's time zone. Defect DEF-NK-02.
 - **TC-07-02 and TC-07-04.** The assistant replies that it can only read the schedule, and nothing changes. `backend/API.md` says the assistant "can't change any data". Moving a block or creating a task through chat is a feature the app doesn't have.
 
-JA_SECTION
+## UC-15 Manage study preferences and UC-16 Update notification settings, by Joshua Alston (JA)
+
+| Test case | Requirement | Result |
+| :--- | :--- | :--- |
+| TC-15-01 Save valid study preferences | UC-15, FR-7, NFR-2 | Pass |
+| TC-15-02 Personal time conflict | UC-15 CheckForConflicts() exception | Pass |
+| TC-15-03 Break longer than session | UC-15 validation | Pass |
+| TC-15-04 Schedule follows preferences | UC-15 and UC-5, FR-16 | Pass |
+| TC-16-01 Opt in to email reminders | UC-16, FR-12 | Pass |
+| TC-16-03 Invalid phone number | UC-16, FR-12 | Pass |
+
+These cases run on the Study Planner settings, Create Schedule, View Schedule and Notifications pages in Chromium, and check the `study_preferences` and `notification_settings` rows in Supabase.
 
 ## Unresolved defects
 
@@ -118,4 +130,3 @@ JA_SECTION
 | DEF-JO-01 | TC-03-03 | The Upload Syllabus page accepts an `.exe` file. | Upload Syllabus page in `frontend/src` |
 | DEF-NK-01 | TC-05-02 | Generate saves a plan that can't fit the workload over the previous plan. It gives a warning but asks for no changes. | `POST /api/agent/generate` |
 | DEF-NK-02 | TC-07-01 | The chatbot states due times in UTC instead of the student's local time. | Chat context in `backend/agent` |
-JA_DEFECTS
