@@ -1,0 +1,13 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Cramberry — Study Timer</title>
+<link rel="stylesheet" href="./timer.css">
+<style>body { background: #f1f5ef; margin: 0; padding: clamp(1rem, 5vw, 3rem); font-family: system-ui, sans-serif; color: #203327; } main { max-width: 34rem; margin: auto; }</style>
+<main><h1>Cramberry</h1><div id="timer"></div></main>
+<script type="module">
+  import { mountStudyTimer } from './study-timer.mjs';
+  mountStudyTimer(document.querySelector('#timer'));
+</script>
+</html>
