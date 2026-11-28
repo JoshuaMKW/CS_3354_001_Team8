@@ -2,8 +2,7 @@
   Cramberry's base stylesheet: design tokens, layout chrome and the shared vocabulary
   (.frame, .topbar, .pagehead, .btn, .panel, .input, .pair, .cal, .avail, ...).
 
-  The look comes from the team's wireframes (frontend/design/*.html and their style.css). At
-  1280px wide the app must render like those files; `npm run visual -- settings|edit` checks it.
+  The look comes from the team's wireframes.
   Unlike the wireframes, the layout is fluid (FR 11, "Dynamic UI layout that fits different
   screens"): the topbar spans the window, .frame caps at 1280px and is centred, two-column pages stack below 1100px, phones get 16px
   gutters, and the week calendar and availability grid scroll sideways inside their own border

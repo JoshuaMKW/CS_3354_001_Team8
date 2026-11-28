@@ -181,8 +181,6 @@ class Report:
             lines += [f"- {'ok' if k['pass'] else 'FAILED'}: {k['check']}" for k in c["checks"]]
             lines.append("")
         (out_dir / f"{stem}.md").write_text("\n".join(lines))
-        (out_dir / f"{stem}.json").write_text(json.dumps(
-            {"title": self.title, "environment": dict(env_rows), "cases": self.cases}, indent=2))
         print(f"\n{len(self.cases)} run, {passed} Pass, {len(self.cases) - passed} Fail")
         print(f"Results written to {out_dir / stem}.md")
         return 0 if passed == len(self.cases) else 1
