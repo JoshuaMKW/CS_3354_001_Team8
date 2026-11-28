@@ -142,7 +142,6 @@ export const TasksPanel = forwardRef<HTMLInputElement, Props>(function TasksPane
     <section className="panel" aria-label="Tasks">
       <div className="rowhead">
         <h2>{editingId ? 'Edit task' : 'Add a task'}</h2>
-        <span className="req">FR 8</span>
       </div>
       <form className="cs-task-form" onSubmit={(e) => void submit(e)} noValidate>
         <div className="field">

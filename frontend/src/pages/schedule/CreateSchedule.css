@@ -24,7 +24,7 @@
 .cs-late { font-weight: 800; color: var(--ink); }
 
 .cs-generate { margin-top: 10px; width: 100%; padding: 9px 14px; font-weight: 800; }
-.cs-generate[aria-busy="true"] { cursor: progress; opacity: .7; }
+.cs-generate[aria-busy="true"] { cursor: default; opacity: .7; }
 .cs-result { margin-top: 12px; padding-top: 10px; border-top: 1px dashed var(--line); font-size: 15px; }
 .cs-engine { font-weight: 800; font-size: 16px; }
 .cs-result .why strong { font-weight: 800; }

@@ -157,27 +157,85 @@ std::vector<GenerationRun> AgentController::history(const std::string& studentId
     return runs_.recent(studentId, 20);
 }
 
+std::string toString(ReplanStatus::State state) {
+    switch (state) {
+        case ReplanStatus::State::Pending: return "pending";
+        case ReplanStatus::State::Done: return "done";
+        case ReplanStatus::State::Skipped: return "skipped";
+        case ReplanStatus::State::Failed: return "failed";
+        case ReplanStatus::State::Unknown: break;
+    }
+    return "unknown";
+}
+
 void BackgroundRegenerator::regenerate(const std::string& studentId, const StudyPreferences&) {
     request(studentId);
 }
 
-void BackgroundRegenerator::request(const std::string& studentId) {
+std::uint64_t BackgroundRegenerator::request(const std::string& studentId) {
+    std::lock_guard lock(mutex_);
+    auto& st = students_[studentId];
+    const auto ticket = ++st.issued;
+    // A running job picks this up when it finishes; a queued one hasn't read the tasks yet.
+    if (!st.queued && !st.running) {
+        st.queued = true;
+        queue_.runTaskInQueue([this, studentId] { run(studentId); });
+    }
+    return ticket;
+}
+
+void BackgroundRegenerator::run(const std::string& studentId) {
+    std::uint64_t covers = 0;
     {
         std::lock_guard lock(mutex_);
-        if (!pending_.insert(studentId).second) return;  // one is already queued
+        auto& st = students_[studentId];
+        st.queued = false;
+        st.running = true;
+        covers = st.issued;  // every change made before now is in the data this run reads
     }
-    queue_.runTaskInQueue([this, studentId] {
-        {
-            std::lock_guard lock(mutex_);
-            pending_.erase(studentId);  // changes from now on queue another run
-        }
+    while (true) {
+        ReplanStatus outcome;
         try {
             const auto result = agent_.generate(studentId, std::nullopt, json::nowMinutes());
-            if (!result) LOG_DEBUG << "Background re-plan skipped: " << result.error().message;
+            if (result) {
+                outcome.state = ReplanStatus::State::Done;
+                outcome.engine = result.value().engine;
+                outcome.details = result.value().warnings;
+            } else {
+                const auto& error = result.error();
+                outcome.state = error.code == ErrorCode::Unprocessable ? ReplanStatus::State::Skipped
+                                                                       : ReplanStatus::State::Failed;
+                outcome.message = error.message;
+                outcome.details = error.details;
+                LOG_INFO << "Background re-plan for " << studentId << " "
+                         << toString(outcome.state) << ": " << error.message;
+            }
         } catch (const std::exception& e) {
+            outcome.state = ReplanStatus::State::Failed;
+            outcome.message = "The planner couldn't re-plan your week.";
             LOG_ERROR << "Background re-plan failed: " << e.what();
         }
-    });
+
+        std::lock_guard lock(mutex_);
+        auto& st = students_[studentId];
+        st.finished = covers;
+        st.last = std::move(outcome);
+        if (st.issued == covers) {
+            st.running = false;
+            return;
+        }
+        covers = st.issued;  // more changes arrived while this one ran: plan again with them
+    }
+}
+
+ReplanStatus BackgroundRegenerator::status(const std::string& studentId, std::uint64_t ticket) const {
+    std::lock_guard lock(mutex_);
+    const auto it = students_.find(studentId);
+    if (it == students_.end() || ticket == 0 || ticket > it->second.issued) return {};
+    if (ticket <= it->second.finished) return it->second.last;
+    ReplanStatus pending;
+    pending.state = ReplanStatus::State::Pending;
+    return pending;
 }
 
 }  // namespace cramberry

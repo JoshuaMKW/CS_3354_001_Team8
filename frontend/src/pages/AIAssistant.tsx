@@ -166,9 +166,9 @@ export default function AIAssistant() {
 
   const examPrompt = `Tell me about my ${courseCode ?? 'next'} exam`;
   const suggestions = [
-    { text: GENERATE_PROMPT, note: 'Plans this week from your tasks and study hours.', req: 'FR 16', run: () => void generate() },
-    { text: NEXT_PROMPT, note: 'Picks the task to start with and why.', req: 'Use case 7', run: () => void send(NEXT_PROMPT) },
-    { text: examPrompt, note: 'What is due, when, and how to prepare.', req: 'Use case 7', run: () => void send(examPrompt) },
+    { text: GENERATE_PROMPT, note: 'Plans this week from your tasks and study hours.', run: () => void generate() },
+    { text: NEXT_PROMPT, note: 'Picks the task to start with and why.', run: () => void send(NEXT_PROMPT) },
+    { text: examPrompt, note: 'What is due, when, and how to prepare.', run: () => void send(examPrompt) },
   ];
 
   return (
@@ -215,7 +215,6 @@ export default function AIAssistant() {
                 <div className="ai-cards">
                   {suggestions.map((s) => (
                     <button key={s.text} type="button" className="ai-card" onClick={s.run} disabled={!!pending}>
-                      <span className="req">{s.req}</span>
                       <strong>{s.text}</strong>
                       <span className="ai-card-note">{s.note}</span>
                     </button>

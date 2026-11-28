@@ -335,7 +335,7 @@ Body: `{"status": "NOT_STARTED" | "IN_PROGRESS" | "COMPLETED"}`.
 
 **Errors:** `404`.
 
-> **Automatic re-planning.** After a successful create, edit, status change or delete, the server rebuilds the student's schedule in the background, the same as calling `POST /api/agent/generate`. If several changes arrive while a rebuild is already waiting, they share one rebuild. Start the server with `CRAMBERRY_AUTO_REPLAN=0` to turn this off. Note that a rebuild replaces any manual block moves.
+> **Automatic re-planning.** After a task is created or deleted, or changed in a way the planner uses (its title, due time or estimate, or whether it is completed), the server rebuilds the student's schedule in the background. Changing notes, course, priority, type, or between `NOT_STARTED` and `IN_PROGRESS` doesn't re-plan. A rebuild works the same as calling `POST /api/agent/generate`. If several changes arrive while a rebuild is already waiting or running, they share one rebuild, and a student never has two rebuilds running at once. The response carries an `X-Replan-Ticket` header; pass it to [`GET /api/agent/replans/{ticket}`](#get-apiagentreplansticket) to find out when that rebuild is done or why it was skipped. Start the server with `CRAMBERRY_AUTO_REPLAN=0` to turn this off (no header is sent then). Note that a rebuild replaces any manual block moves.
 
 ---
 
@@ -503,6 +503,30 @@ The student's 20 most recent generation attempts, newest first.
   {"id": "…", "createdAt": "2026-11-23T20:29:00Z", "engine": "local", "ok": true, "blockCount": 3, "details": []}
 ]
 ```
+
+### `GET /api/agent/replans/{ticket}`
+
+How the background re-plan for an `X-Replan-Ticket` turned out. It answers `done`, `skipped` or `failed` once a re-plan that includes the change behind the ticket has finished; until then it answers `pending`. Clients poll it every few hundred milliseconds.
+
+**200 OK**
+
+```json
+{"ticket": 7, "state": "done", "engine": "claude-haiku-5.5", "details": []}
+```
+
+```json
+{"ticket": 8, "state": "skipped", "message": "None of your study hours are left this week. Add more study hours or try again on Monday.", "details": []}
+```
+
+| `state` | Meaning |
+| :--- | :--- |
+| `pending` | The re-plan hasn't finished yet. |
+| `done` | The schedule was rebuilt. `engine` names the planner; `details` lists warnings, such as why the AI's plan was replaced by the built-in planner. |
+| `skipped` | Nothing was re-planned; `message` says why (no preferences, no unfinished tasks due in the next 7 days, or no study hours left this week). |
+| `failed` | The planner couldn't rebuild the week; the saved schedule is unchanged. `message` and `details` say why. |
+| `unknown` | The server doesn't know this ticket, for example because it restarted. |
+
+**Errors:** `400` if the ticket isn't a positive whole number.
 
 ---
 

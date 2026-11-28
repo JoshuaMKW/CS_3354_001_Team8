@@ -83,6 +83,7 @@ Every route except register, login and health needs `Authorization: Bearer <toke
 | `POST /api/agent/generate` `{day?}` | Generate this week's (or one day's) plan |
 | `POST /api/agent/chat` `{message}` | Ask the AI assistant (503 without an AI key) |
 | `GET /api/agent/runs` | Recent generation attempts |
+| `GET /api/agent/replans/{ticket}` | Whether the background re-plan for a task change's `X-Replan-Ticket` is done, skipped or failed |
 | `GET`, `DELETE /api/schedule`, `PATCH /api/schedule/blocks` | View, clear, or move a block |
 | `DELETE /api/schedule/blocks` `{assignmentId, day, start, end}` | Remove one block |
 | `GET /api/schedule/export.ics` | Download the plan and deadlines as iCalendar |

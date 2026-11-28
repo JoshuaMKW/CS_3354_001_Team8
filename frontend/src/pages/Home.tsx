@@ -82,13 +82,21 @@ export default function Home() {
   const now = localParts(new Date().toISOString(), offset);
   const name = (dash?.student.name ?? student?.name ?? '').split(' ')[0];
 
+  // The switch shows the new status as soon as it's clicked; the save and the refresh of the
+  // counts happen behind it, and a failed save puts the old status back.
+  const withStatus = (d: Dashboard, id: string, status: TaskStatus): Dashboard => ({
+    ...d,
+    upcoming: d.upcoming.map((t) => (t.id === id ? { ...t, status } : t)),
+  });
   async function setStatus(task: Task, status: TaskStatus) {
     setBusy(task.id);
     setRowError(null);
+    setDash((d) => (d ? withStatus(d, task.id, status) : d));
     try {
       await api.setTaskStatus(task.id, status);
-      await load();
+      void load();
     } catch (e) {
+      setDash((d) => (d ? withStatus(d, task.id, task.status) : d));
       setRowError({ id: task.id, msg: errorMessage(e) });
     } finally {
       setBusy(null);
@@ -127,7 +135,6 @@ export default function Home() {
           <div className="alert hm-nudge" role="status">
             <div className="rowhead">
               <strong>Tell Cramberry when you can study.</strong>
-              <span className="req hm-req-dark">UC-15</span>
             </div>
             It can't plan your week until you mark your study hours and personal time.
             <div className="actions">
@@ -143,9 +150,9 @@ export default function Home() {
               <section className="panel" aria-label="Today's study blocks">
                 <div className="rowhead">
                   <h2>Today's study blocks</h2>
-                  <span className="req">
-                    {dash.todaysBlocks.length ? `${formatDuration(todayMinutes)} planned` : 'UC-05'}
-                  </span>
+                  {dash.todaysBlocks.length > 0 && (
+                    <span className="req">{formatDuration(todayMinutes)} planned</span>
+                  )}
                 </div>
                 {dash.todaysBlocks.length === 0 ? (
                   <p className="hm-empty">
@@ -169,7 +176,6 @@ export default function Home() {
               <section className="panel" aria-label="Upcoming tasks">
                 <div className="rowhead">
                   <h2>Coming up</h2>
-                  <span className="req">FR 23</span>
                 </div>
                 <p className="hint">Unfinished tasks due in the next 14 days, most important first.</p>
                 {dash.upcoming.length === 0 ? (
@@ -191,8 +197,7 @@ export default function Home() {
                           label={`Status of ${t.title}`}
                           options={STATUS_OPTIONS}
                           value={t.status}
-                          disabled={busy === t.id}
-                          onChange={(s) => void setStatus(t, s)}
+                          onChange={(s) => busy !== t.id && void setStatus(t, s)}
                           className="hm-seg"
                         />
                       </li>

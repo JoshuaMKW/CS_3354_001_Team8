@@ -99,7 +99,6 @@ export default function CreateSchedule() {
           <section className="panel" aria-label="Generate my schedule">
             <div className="rowhead">
               <h2>Let Cramberry plan it</h2>
-              <span className="req">UC-05</span>
             </div>
             <p className="cs-copy">
               Plans every unfinished task due in the next 7 days into the study hours you have left this week.
@@ -178,7 +177,6 @@ export default function CreateSchedule() {
           <section className="panel" aria-label="Study settings">
             <div className="rowhead">
               <h2>Study hours</h2>
-              <span className="req">UC-15</span>
             </div>
             <p className="cs-copy">Cramberry only plans inside the hours you marked, and never over personal time.</p>
             <div className="actions cs-result-actions">

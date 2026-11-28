@@ -173,6 +173,16 @@ export interface ChatResponse {
   reply: string;
 }
 
+/** How the background re-plan a task change queued turned out (GET /api/agent/replans/{ticket}). */
+export type ReplanState = 'pending' | 'done' | 'skipped' | 'failed' | 'unknown';
+export interface ReplanStatus {
+  ticket: number;
+  state: ReplanState;
+  engine?: string;
+  message?: string;
+  details: string[];
+}
+
 export interface AgentRun {
   id: string;
   createdAt: IsoUtc;

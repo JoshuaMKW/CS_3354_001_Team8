@@ -73,6 +73,7 @@ void enableCors(const std::string& origin) {
         response->addHeader("Access-Control-Allow-Headers", "Authorization, Content-Type");
         response->addHeader("Access-Control-Allow-Methods", "GET, POST, PUT, PATCH, DELETE, OPTIONS");
         response->addHeader("Access-Control-Max-Age", "600");
+        response->addHeader("Access-Control-Expose-Headers", "X-Replan-Ticket");
     };
     drogon::app().registerPreRoutingAdvice(
         [addHeaders](const drogon::HttpRequestPtr& request, drogon::AdviceCallback&& stop,
@@ -167,11 +168,11 @@ int main() {
         const bool autoReplan = env("CRAMBERRY_AUTO_REPLAN", "1") == "1";
         registerUserRoutes(app, userController, guard, slowWork);
         registerTaskRoutes(app, taskController, guard,
-                           autoReplan ? TasksChanged([&regenerator](const std::string& id) { regenerator.request(id); })
+                           autoReplan ? TasksChanged([&regenerator](const std::string& id) { return regenerator.request(id); })
                                       : TasksChanged{});
         registerScheduleRoutes(app, scheduleController, guard);
         registerScheduleSharingRoutes(app, scheduleSharing, guard);
-        registerAgentRoutes(app, agent, guard);
+        registerAgentRoutes(app, agent, regenerator, guard);
         registerSettingsRoutes(app, settingsController, settings, guard);
         registerNotificationRoutes(app, notificationController, notificationSettings, inbox, guard);
 

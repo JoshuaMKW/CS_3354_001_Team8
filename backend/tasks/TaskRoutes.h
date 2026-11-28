@@ -2,6 +2,7 @@
 
 #include <drogon/HttpAppFramework.h>
 
+#include <cstdint>
 #include <functional>
 
 #include "tasks/TaskController.h"
@@ -18,7 +19,9 @@ namespace cramberry {
 // GET    /api/reports/weekly?start=YYYY-MM-DD
 // onChange runs after any task is created, edited, re-statused or deleted (used to
 // re-plan the student's schedule, "Plan Updating" in the SOW).
-using TasksChanged = std::function<void(const std::string& studentId)>;
+// It returns the ticket of the re-plan it queued, or 0 for none; a non-zero ticket is sent back
+// in the X-Replan-Ticket header so the client can ask GET /api/agent/replans/{ticket} how it went.
+using TasksChanged = std::function<std::uint64_t(const std::string& studentId)>;
 void registerTaskRoutes(drogon::HttpAppFramework& app, TaskController& tasks, const AuthGuard& guard,
                         TasksChanged onChange = {});
 

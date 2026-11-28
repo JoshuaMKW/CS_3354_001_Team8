@@ -4,7 +4,8 @@
 
 namespace cramberry {
 
-void registerAgentRoutes(drogon::HttpAppFramework& app, AgentController& agent, const AuthGuard& guard) {
+void registerAgentRoutes(drogon::HttpAppFramework& app, AgentController& agent,
+                         const BackgroundRegenerator& regenerator, const AuthGuard& guard) {
     app.registerHandler(
         "/api/agent/generate",
         guard(
@@ -64,6 +65,31 @@ void registerAgentRoutes(drogon::HttpAppFramework& app, AgentController& agent, 
                             return http::json(list);
                         }),
                         {drogon::Get});
+
+    app.registerHandler(
+        "/api/agent/replans/{ticket}",
+        guard.withId([&regenerator](const http::HttpRequestPtr&, const std::string& studentId,
+                                    const std::string& ticketText) {
+            std::uint64_t ticket = 0;
+            try {
+                std::size_t used = 0;
+                ticket = std::stoull(ticketText, &used);
+                if (used != ticketText.size()) ticket = 0;
+            } catch (const std::exception&) {
+                ticket = 0;
+            }
+            if (ticket == 0) return http::error(drogon::k400BadRequest, "ticket must be a positive whole number");
+            const auto status = regenerator.status(studentId, ticket);
+            Json::Value v;
+            v["ticket"] = Json::UInt64(ticket);
+            v["state"] = toString(status.state);
+            if (!status.engine.empty()) v["engine"] = status.engine;
+            if (!status.message.empty()) v["message"] = status.message;
+            v["details"] = Json::arrayValue;
+            for (const auto& d : status.details) v["details"].append(d);
+            return http::json(v);
+        }),
+        {drogon::Get});
 }
 
 }  // namespace cramberry

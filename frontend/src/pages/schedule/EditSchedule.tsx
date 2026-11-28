@@ -40,27 +40,19 @@ interface UndoEntry {
 type ReplanOutcome =
   | { kind: 'done' }
   | { kind: 'failed'; details: string[] }
-  | { kind: 'none' }
+  | { kind: 'none'; reason: string | null }
   | { kind: 'timeout' };
 
 type BusyKind = 'move' | 'save' | 'adjust' | 'remove' | 'undo';
-
-const scheduleSig = (blocks: Block[]) =>
-  JSON.stringify(blocks.map((b) => [b.assignmentId, b.day, b.start, b.end, b.title]));
 
 type AlertState =
   | { kind: 'clash'; problems: string[]; block: Block; target: Slot; title?: string; fromSave: boolean }
   | { kind: 'info'; text: string; lines: string[] };
 
-/** Longest wait for the background re-plan a task change starts. */
+/** Longest wait for the background re-plan a task change starts (an AI attempt can take about
+ *  10 s before the built-in planner takes over). */
 const REPLAN_WAIT_MS = 20_000;
-/** No run logged and the schedule untouched after this long: no re-plan is coming. An AI attempt
- *  can take about 10 s before it logs anything, so this is longer than that. */
-const NO_REPLAN_AFTER_MS = 12_000;
-/** The same, when nothing is left to plan (every task completed): the server skips the re-plan
- *  without logging a run, so a short look is enough. */
-const NOTHING_TO_PLAN_AFTER_MS = 2_500;
-const POLL_MS = 800;
+const POLL_MS = 400;
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
 function errorLines(e: unknown): string[] {
@@ -308,44 +300,20 @@ export default function EditSchedule() {
   /* ---------- saving the panel ---------- */
 
   /**
-   * Waits for the background re-plan a task change starts.
-   *
-   * The run log is newest first, with minute-resolution times, and a failed AI attempt is logged
-   * (ok: false) before the local planner's fallback (ok: true) saves. So this waits until the
-   * newest run that wasn't there before is ok, or a local run failed, and then until neither the
-   * runs nor the schedule change between two polls, so a run from an earlier change that lands
-   * just before ours isn't taken for it. With nothing to plan the server logs no run at all.
+   * Waits for the background re-plan a task change queued. The server answers for its ticket once
+   * a re-plan that includes the change has finished, or says right away that it skipped it.
    */
-  async function waitForReplan(
-    before: Set<string>,
-    beforeSig: string,
-    opts: { nothingToPlan: boolean; completedTaskId: string | null },
-  ): Promise<ReplanOutcome> {
+  async function waitForReplan(ticket: number): Promise<ReplanOutcome> {
     const t0 = Date.now();
-    const quietFor = opts.nothingToPlan ? NOTHING_TO_PLAN_AFTER_MS : NO_REPLAN_AFTER_MS;
-    let prev: string | null = null;
     while (Date.now() - t0 < REPLAN_WAIT_MS) {
-      await sleep(POLL_MS);
-      const [runs, sched] = await Promise.all([
-        api.listAgentRuns().catch(() => null),
-        api.getSchedule().catch(() => null),
-      ]);
-      if (!runs || !sched) continue;
-      const fresh = runs.filter((r) => !before.has(r.id));
-      const sig = scheduleSig(sched.blocks);
-      const state = `${fresh.map((r) => r.id).join(',')}#${sig}`;
-      const settled = state === prev;
-      prev = state;
-      const newest = fresh[0];
-      if (newest?.ok || (!newest && sig !== beforeSig)) {
-        // A plan made after the task was completed has no blocks for it.
-        const reflects = !opts.completedTaskId || !sched.blocks.some((b) => b.assignmentId === opts.completedTaskId);
-        if (settled && reflects) return { kind: 'done' };
-      } else if (newest && newest.engine === 'local') {
-        if (settled) return { kind: 'failed', details: newest.details };
-      } else if (!newest && Date.now() - t0 >= quietFor) {
-        return { kind: 'none' };
+      const status = await api.getReplan(ticket).catch(() => null);
+      if (status?.state === 'done') return { kind: 'done' };
+      if (status?.state === 'skipped') return { kind: 'none', reason: status.message ?? null };
+      if (status?.state === 'failed') {
+        return { kind: 'failed', details: [status.message ?? '', ...status.details].filter(Boolean) };
       }
+      if (status?.state === 'unknown') return { kind: 'none', reason: null }; // e.g. the server restarted
+      await sleep(POLL_MS);
     }
     return { kind: 'timeout' };
   }
@@ -394,42 +362,33 @@ export default function EditSchedule() {
     let rebalanced = false;
     let current = d;
     try {
-      // 1. Task fields first: every task edit makes the server re-plan the week in the background,
-      //    which replaces the saved blocks. Wait for that re-plan to land before touching blocks.
-      //    That re-plan is the rebalance, so no generate call follows it.
+      // 1. Task fields first. Marking the task completed (or undoing that) makes the server
+      //    re-plan the week in the background, which replaces the saved blocks: wait for that
+      //    re-plan before touching blocks. It is the rebalance, so no generate call follows it.
+      //    Notes, course and Not started / In progress don't change the plan; no ticket comes back.
       if (task && taskChanged) {
-        const [runs, sched] = await Promise.all([
-          api.listAgentRuns().catch(() => []),
-          api.getSchedule().catch(() => d.schedule),
-        ]);
         const onlyStatus = Object.keys(taskPatch).length === 1 && taskPatch.status;
-        const updated = onlyStatus
-          ? await api.setTaskStatus(task.id, taskPatch.status!)
-          : await api.updateTask(task.id, taskPatch);
+        const { task: updated, replanTicket } = onlyStatus
+          ? await api.setTaskStatusWithReplan(task.id, taskPatch.status!)
+          : await api.updateTaskWithReplan(task.id, taskPatch);
         setData((x) => (x ? { ...x, tasks: x.tasks.map((t) => (t.id === updated.id ? updated : t)) } : x));
-        const tasksNow = d.tasks.map((t) => (t.id === updated.id ? updated : t));
-        const nothingToPlan = !tasksNow.some((t) => t.status !== 'COMPLETED');
-        replan = await waitForReplan(new Set(runs.map((r) => r.id)), scheduleSig(sched.blocks), {
-          nothingToPlan,
-          completedTaskId: updated.status === 'COMPLETED' ? updated.id : null,
-        });
-        if (replan.kind === 'none') {
-          report.push(
-            nothingToPlan
-              ? 'Your week was not re-planned: you have no unfinished tasks left to plan.'
-              : 'Your week was not re-planned.',
-          );
+        replan = replanTicket === null ? null : await waitForReplan(replanTicket);
+        if (replan?.kind === 'none') {
+          const reason = replan.reason?.replace(/\.?$/, '.');
+          report.push(reason ? `Your week was not re-planned: ${reason}` : 'Your week was not re-planned.');
           if (updated.status === 'COMPLETED') {
             report.push(`The study blocks for "${updated.title}" stay on your schedule until you remove them.`);
           }
-        } else if (replan.kind === 'failed') {
+        } else if (replan?.kind === 'failed') {
           report.push("The planner couldn't re-plan your week after this change, so your schedule was left as it was.", ...replan.details);
-        } else if (replan.kind === 'timeout') {
+        } else if (replan?.kind === 'timeout') {
           report.push("The background re-plan hasn't finished yet. Refresh in a moment to see your new week.");
         }
       }
-      // 2. Rebalance = an explicit re-plan, when no task change already started one.
-      if (rebalance && !replan) {
+      // 2. Rebalance = an explicit re-plan, when no task change already started one: after the
+      //    block moved, or when Save was pressed with nothing changed. A new title, notes or
+      //    status don't move anything, so they don't rebalance.
+      if (rebalance && !replan && (timeChanged || (!titleChanged && !taskChanged))) {
         try {
           const r = await api.generateSchedule();
           rebalanced = true;
@@ -459,9 +418,16 @@ export default function EditSchedule() {
           : mine.find((b) => sameBlock(b, block));
         if (!from) {
           finalKey = null;
-          report.push(
-            `The new plan has no block for "${task?.title ?? block.title}"${draft.status === 'COMPLETED' ? ' because it is completed' : ''}, so your time and title changes were not applied.`,
-          );
+          const name = task?.title ?? block.title;
+          if (timeChanged || titleChanged) {
+            report.push(
+              `The new plan has no block for "${name}"${draft.status === 'COMPLETED' ? ' because it is completed' : ''}, so your time and title changes were not applied.`,
+            );
+          } else if (draft.status === 'COMPLETED') {
+            report.push(`"${name}" is completed, so its study blocks were taken off your schedule.`);
+          } else {
+            report.push(`The new plan has no block for "${name}".`);
+          }
         } else if (sameSlot(slotOf(from), to) && from.title === title) {
           finalKey = blockKey(from);
           blockKept = true;
@@ -766,12 +732,9 @@ export default function EditSchedule() {
     })),
   ];
 
+  // Only completing a task (or undoing that) changes the plan; the panel warns before that re-plan.
   const taskDirty =
-    !!selectedTask &&
-    !!draft &&
-    (draft.notes !== selectedTask.notes ||
-      (draft.courseId || null) !== selectedTask.courseId ||
-      draft.status !== selectedTask.status);
+    !!selectedTask && !!draft && (draft.status === 'COMPLETED') !== (selectedTask.status === 'COMPLETED');
 
   return (
     <Layout>
@@ -829,7 +792,7 @@ export default function EditSchedule() {
             />
           ) : (
             <>
-              <div className="rowhead"><h2>Study block</h2><span className="req">FR 17</span></div>
+              <div className="rowhead"><h2>Study block</h2></div>
               <p className="hint">Select a study block on the calendar to change its time, title, status or notes.</p>
               {notice && <p className="hint" role="status">{notice}</p>}
               {errors.length > 0 && (

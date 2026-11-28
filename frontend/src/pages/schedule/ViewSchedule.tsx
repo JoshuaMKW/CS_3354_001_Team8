@@ -99,7 +99,6 @@ export default function ViewSchedule() {
           <>
             <Link className="btn vs-a" to="/schedule/create">Create schedule</Link>
             <Link className="btn vs-a" to="/schedule/edit">Edit schedule</Link>
-            <span className="req">FR 10</span>
             <button type="button" className="btn primary" onClick={() => void exportIcs()} disabled={exporting}>
               {exporting ? 'Exporting…' : 'Export .ics'}
             </button>
@@ -159,7 +158,6 @@ export default function ViewSchedule() {
           <section className="panel vs-tasks" aria-label="Tasks on this schedule">
             <div className="rowhead">
               <h2>Tasks behind these blocks</h2>
-              <span className="req">FR 23</span>
             </div>
             <ul className="list">
               {behind.map((r) => {

@@ -2,9 +2,10 @@
 
 #include <trantor/utils/ConcurrentTaskQueue.h>
 
+#include <cstdint>
+#include <map>
 #include <mutex>
 #include <optional>
-#include <set>
 #include <string>
 #include <vector>
 
@@ -54,22 +55,48 @@ private:
     std::string aiEngine_;  // label for plans and runs made by gemini_
 };
 
+// How a background re-plan asked for with a ticket turned out.
+struct ReplanStatus {
+    enum class State { Pending, Done, Skipped, Failed, Unknown };
+    State state = State::Unknown;
+    std::string engine;                // Done: who made the plan, e.g. "claude-haiku-5.5" or "local"
+    std::string message;               // Skipped or Failed: why
+    std::vector<std::string> details;  // Done: warnings; Failed: the planner's reasons
+};
+
+std::string toString(ReplanStatus::State state);
+
 // "Plan Updating" from the SOW: rebuilds a student's schedule in the background after
 // their preferences (UC-15) or tasks change. Requests for a student who already has
-// one waiting are merged, so a burst of edits costs one generation.
+// one waiting are merged, so a burst of edits costs one generation, and a student never
+// has two re-plans running at once, so an older plan can't overwrite a newer one.
+//
+// request() returns a ticket. status() answers for that ticket once a re-plan that
+// started after it has finished, so a client can wait for exactly its own change.
 class BackgroundRegenerator : public IScheduleRegenerator {
 public:
     BackgroundRegenerator(AgentController& agent, trantor::ConcurrentTaskQueue& queue)
         : agent_(agent), queue_(queue) {}
 
     void regenerate(const std::string& studentId, const StudyPreferences& prefs) override;
-    void request(const std::string& studentId);
+    std::uint64_t request(const std::string& studentId);
+    ReplanStatus status(const std::string& studentId, std::uint64_t ticket) const;
 
 private:
+    struct StudentState {
+        std::uint64_t issued = 0;    // last ticket handed out
+        std::uint64_t finished = 0;  // every ticket up to this one has a finished re-plan
+        bool queued = false;         // a job is waiting in the queue
+        bool running = false;        // a job is generating now
+        ReplanStatus last;           // outcome of the re-plan that set `finished`
+    };
+
+    void run(const std::string& studentId);
+
     AgentController& agent_;
     trantor::ConcurrentTaskQueue& queue_;
-    std::mutex mutex_;
-    std::set<std::string> pending_;
+    mutable std::mutex mutex_;
+    std::map<std::string, StudentState> students_;
 };
 
 }  // namespace cramberry

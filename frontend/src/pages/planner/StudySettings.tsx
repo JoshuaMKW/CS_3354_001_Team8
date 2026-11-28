@@ -190,7 +190,7 @@ export default function StudySettings() {
       {head}
       <main className="settings">
         <section className="panel" aria-label="When you can study">
-          <div className="rowhead"><h2>When can you study?</h2><span className="req">Use case 15</span></div>
+          <div className="rowhead"><h2>When can you study?</h2></div>
           <div className="paint" role="toolbar" aria-label="Paint tool">
             <span>Paint the week with:</span>
             {TOOLS.map((t) => (
@@ -218,7 +218,7 @@ export default function StudySettings() {
 
         <div className="stack">
           <section className="panel" aria-label="Sessions and breaks">
-            <div className="rowhead"><h2>Sessions and breaks</h2><span className="req">FR 7</span></div>
+            <div className="rowhead"><h2>Sessions and breaks</h2></div>
             <div className="pair">
               <div className="field">
                 <label htmlFor="ss-max">Most study per day</label>
@@ -263,7 +263,7 @@ export default function StudySettings() {
           </section>
 
           <section className="panel" aria-label="Deadlines">
-            <div className="rowhead"><h2>Deadlines</h2><span className="req">FR 7</span></div>
+            <div className="rowhead"><h2>Deadlines</h2></div>
             <div className="field" title={DEVICE_ONLY}>
               <label htmlFor="ss-early">Finish work this early</label>
               <select

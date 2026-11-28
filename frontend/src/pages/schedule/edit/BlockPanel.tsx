@@ -60,7 +60,7 @@ export function BlockPanel(p: BlockPanelProps) {
 
   return (
     <>
-      <div className="rowhead"><h2>Study block</h2><span className="req">FR 17</span></div>
+      <div className="rowhead"><h2>Study block</h2></div>
       <div className="field">
         <label htmlFor="es-title">Title</label>
         <input id="es-title" className="input" value={draft.title} maxLength={200}
@@ -112,7 +112,7 @@ export function BlockPanel(p: BlockPanelProps) {
         </div>
       </div>
       <div className="field">
-        <div className="rowhead"><label id="es-status-label">Status</label><span className="req">FR 23</span></div>
+        <div className="rowhead"><label id="es-status-label">Status</label></div>
         <div className="seg" role="radiogroup" aria-labelledby="es-status-label">
           {STATUSES.map(([value, label]) => (
             <span
@@ -144,11 +144,11 @@ export function BlockPanel(p: BlockPanelProps) {
         </div>
       </div>
       <div className="why">
-        <div className="rowhead"><span>Why this block?</span><span className="req">FR 15</span></div>
+        <div className="rowhead"><span>Why this block?</span></div>
         {p.why}
       </div>
       <div className="field">
-        <div className="rowhead"><label htmlFor="es-notes">Notes</label><span className="req">FR 8</span></div>
+        <div className="rowhead"><label htmlFor="es-notes">Notes</label></div>
         <textarea id="es-notes" className="input" rows={2} value={draft.notes} maxLength={4000} disabled={!p.hasTask}
           onChange={(e) => p.onChange({ notes: e.target.value })} />
       </div>
@@ -169,7 +169,7 @@ export function BlockPanel(p: BlockPanelProps) {
         <span>Rebalance my other study blocks after saving</span>
       </div>
       {p.taskDirty && (
-        <p className="hint">Saving status, course or notes changes the task, and the planner then re-plans your whole week.</p>
+        <p className="hint">Marking a task completed, or undoing that, makes the planner re-plan your whole week.</p>
       )}
       {p.errors.length > 0 && (
         <div className="errtext" role="alert">

@@ -136,7 +136,6 @@ export default function Notifications() {
           <section className="panel" aria-label="Enable notifications">
             <div className="rowhead">
               <h2>Enable Notifications</h2>
-              <span className="req">FR 12, FR 13</span>
             </div>
             <p className="hint">Turn this off to stop every reminder. Your choices below are kept.</p>
             <div className="seg ac-seg" role="radiogroup" aria-label="Notifications">
@@ -152,7 +151,6 @@ export default function Notifications() {
           <section className={`panel${settings.enabled ? '' : ' ac-off'}`} aria-label="Overview">
             <div className="rowhead">
               <h2>Overview</h2>
-              <span className="req">Use case 16</span>
             </div>
             <Toggle on={settings.deadlineReminders} onChange={(v) => patch({ deadlineReminders: v })} hint="A reminder before each unfinished task is due.">
               Deadline Reminders
@@ -179,7 +177,6 @@ export default function Notifications() {
           <section className={`panel${settings.enabled ? '' : ' ac-off'}`} aria-label="Notification sources">
             <div className="rowhead">
               <h2>Notification Sources</h2>
-              <span className="req">FR 12</span>
             </div>
             <Toggle on={settings.email} onChange={(v) => patch({ email: v })}>Email</Toggle>
             <Toggle on={settings.desktop} onChange={(v) => patch({ desktop: v })} hint="Shows in your Cramberry inbox.">

@@ -71,7 +71,6 @@ export function CoursesPanel({ courses, onChanged }: Props) {
     <section className="panel" aria-label="Courses">
       <div className="rowhead">
         <h2>Courses</h2>
-        <span className="req">UC-11</span>
       </div>
       {courses.length === 0 ? (
         <p className="hint">No courses yet. Add the ones you're taking so tasks can be grouped by course.</p>

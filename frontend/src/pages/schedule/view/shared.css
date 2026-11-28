@@ -10,8 +10,8 @@ a.btn.vs-a.primary { color: var(--hot); }
   border: 0; border-left: 1.5px solid var(--ink); white-space: nowrap;
 }
 .vs-seg button:first-child { border-left: 0; }
-.vs-seg button.on { background: var(--pink); }
-.vs-seg button[disabled] { cursor: progress; }
+.vs-seg button.on { background: var(--ink); color: var(--hot); font-weight: 700; }
+.vs-seg button[disabled] { cursor: default; }
 .vs-seg button:focus-visible { outline: 3px solid var(--hot); outline-offset: -3px; }
 
 .vs-check { background: none; border: 0; padding: 0; cursor: pointer; text-align: left; }

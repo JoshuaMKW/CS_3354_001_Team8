@@ -3,6 +3,7 @@
 
 import type {
   AgentRun,
+  ReplanStatus,
   AppNotification,
   AuthResponse,
   Block,
@@ -101,6 +102,10 @@ interface RequestOptions {
 }
 
 export async function request<T>(method: Method, path: string, opts: RequestOptions = {}): Promise<T> {
+  return (await send<T>(method, path, opts)).data;
+}
+
+async function send<T>(method: Method, path: string, opts: RequestOptions): Promise<{ data: T; res: Response }> {
   let url = path;
   if (opts.query) {
     const qs = new URLSearchParams();
@@ -120,7 +125,7 @@ export async function request<T>(method: Method, path: string, opts: RequestOpti
     body: opts.body !== undefined ? JSON.stringify(opts.body) : undefined,
   });
 
-  if (res.status === 204) return undefined as T;
+  if (res.status === 204) return { data: undefined as T, res };
 
   const text = await res.text();
   let data: unknown = null;
@@ -140,7 +145,7 @@ export async function request<T>(method: Method, path: string, opts: RequestOpti
     }
     throw new ApiError(res.status, body);
   }
-  return data as T;
+  return { data: data as T, res };
 }
 
 /* ---------- Health ---------- */
@@ -209,6 +214,23 @@ export const setTaskStatus = (id: string, status: TaskStatus) =>
   request<Task>('PUT', `/api/tasks/${encodeURIComponent(id)}/status`, { body: { status } });
 export const deleteTask = (id: string) => request<void>('DELETE', `/api/tasks/${encodeURIComponent(id)}`);
 
+/** A task write plus the ticket of the background re-plan it queued (null when re-planning is off). */
+export interface TaskWrite {
+  task: Task;
+  replanTicket: number | null;
+}
+async function taskWrite(method: Method, path: string, body: unknown): Promise<TaskWrite> {
+  const { data, res } = await send<Task>(method, path, { body });
+  const ticket = Number(res.headers.get('X-Replan-Ticket'));
+  return { task: data, replanTicket: Number.isInteger(ticket) && ticket > 0 ? ticket : null };
+}
+/** updateTask, also returning the re-plan ticket. */
+export const updateTaskWithReplan = (id: string, body: UpdateTaskRequest) =>
+  taskWrite('PATCH', `/api/tasks/${encodeURIComponent(id)}`, body);
+/** setTaskStatus, also returning the re-plan ticket. */
+export const setTaskStatusWithReplan = (id: string, status: TaskStatus) =>
+  taskWrite('PUT', `/api/tasks/${encodeURIComponent(id)}/status`, { status });
+
 /* ---------- Weekly report ---------- */
 
 /** start: YYYY-MM-DD (7 days from 00:00 UTC). Omit for the current week. */
@@ -229,6 +251,7 @@ export const generateSchedule = (day?: Day) =>
   request<GenerateResponse>('POST', '/api/agent/generate', day ? { body: { day } } : {});
 export const chat = (message: string) => request<ChatResponse>('POST', '/api/agent/chat', { body: { message } });
 export const listAgentRuns = () => request<AgentRun[]>('GET', '/api/agent/runs');
+export const getReplan = (ticket: number) => request<ReplanStatus>('GET', `/api/agent/replans/${ticket}`);
 
 /* ---------- Schedule ---------- */
 

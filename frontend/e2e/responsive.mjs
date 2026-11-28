@@ -23,6 +23,7 @@ const outDir = join(dirname(fileURLToPath(import.meta.url)), '..', 'visual', 'ou
 mkdirSync(outDir, { recursive: true });
 
 let token = null;
+let lastReplanTicket = null; // from the X-Replan-Ticket header of the last task write
 
 async function api(method, path, body) {
   const r = await fetch(`${BASE}${path}`, {
@@ -30,6 +31,8 @@ async function api(method, path, body) {
     headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) },
     body: body ? JSON.stringify(body) : undefined,
   });
+  const ticket = r.headers.get('X-Replan-Ticket');
+  if (ticket) lastReplanTicket = ticket;
   const text = await r.text();
   let json = null;
   try { json = text ? JSON.parse(text) : null; } catch { json = text; }
@@ -64,6 +67,11 @@ async function seed() {
   await api('POST', '/api/tasks', {
     title: 'Review Ch. 9', dueAt: ymd(5), type: 'exam', courseId: course.id, estimatedMinutes: 120, priority: 2,
   });
+  // Creating tasks starts a background re-plan; let it finish so it can't replace the plan below.
+  for (let i = 0; lastReplanTicket && i < 100; i++) {
+    if ((await api('GET', `/api/agent/replans/${lastReplanTicket}`)).state !== 'pending') break;
+    await new Promise((res) => setTimeout(res, 200));
+  }
   await api('POST', '/api/agent/generate');
   const sched = await api('GET', '/api/schedule');
   if (!sched.blocks?.length) throw new Error('generate made no blocks');

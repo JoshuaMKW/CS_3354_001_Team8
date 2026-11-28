@@ -2,7 +2,6 @@
 .hm-grid { display: grid; grid-template-columns: minmax(0, 1fr) 372px; gap: 18px; align-items: start; }
 .hm-nudge .rowhead { margin-bottom: 2px; }
 .hm-nudge strong { font-weight: 800; }
-.hm-req-dark { color: var(--ink); }
 .hm-empty { margin-top: 8px; font-size: 15px; color: var(--quiet); }
 
 .hm-blocks li { display: grid; grid-template-columns: 150px 1fr auto; gap: 12px; }

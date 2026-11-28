@@ -114,9 +114,15 @@ Json::Value toJson(const Task& task, Timestamp now) {
 void registerTaskRoutes(drogon::HttpAppFramework& app, TaskController& tasks, const AuthGuard& guard,
                         TasksChanged onChange) {
     auto taskJson = [](const Task& t) { return toJson(t, json::nowMinutes()); };
-    // Returns the response unchanged, telling onChange about successful writes.
-    auto notify = [onChange](const std::string& studentId, http::HttpResponsePtr response) {
-        if (onChange && static_cast<int>(response->statusCode()) < 300) onChange(studentId);
+    // Tells onChange about successful writes that change the plan, and adds the re-plan ticket
+    // it returns.
+    auto notify = [onChange](const std::string& studentId, http::HttpResponsePtr response,
+                             bool changesPlan = true) {
+        if (changesPlan && onChange && static_cast<int>(response->statusCode()) < 300) {
+            if (const auto ticket = onChange(studentId)) {
+                response->addHeader("X-Replan-Ticket", std::to_string(ticket));
+            }
+        }
         return response;
     };
     auto courseJson = [](const Course& c) { return toJson(c); };
@@ -230,8 +236,9 @@ void registerTaskRoutes(drogon::HttpAppFramework& app, TaskController& tasks, co
             Task edited = existing.value();
             std::string error;
             if (!applyTaskJson(*body, edited, error)) return http::error(drogon::k400BadRequest, error);
-            return notify(studentId,
-                          http::respond(tasks.updateTask(studentId, edited, json::nowMinutes()), taskJson));
+            const auto updated = tasks.updateTask(studentId, edited, json::nowMinutes());
+            const bool changesPlan = updated && updated.value().changesPlanFrom(existing.value());
+            return notify(studentId, http::respond(updated, taskJson), changesPlan);
         }),
         {Patch});
 
@@ -256,8 +263,11 @@ void registerTaskRoutes(drogon::HttpAppFramework& app, TaskController& tasks, co
                 return http::error(drogon::k400BadRequest,
                                    "status must be NOT_STARTED, IN_PROGRESS or COMPLETED");
             }
-            return notify(studentId,
-                          http::respond(tasks.setStatus(studentId, id, *status, json::nowMinutes()), taskJson));
+            const auto before = tasks.getTask(studentId, id);
+            if (!before) return http::error(before.error());
+            const auto updated = tasks.setStatus(studentId, id, *status, json::nowMinutes());
+            const bool changesPlan = updated && updated.value().changesPlanFrom(before.value());
+            return notify(studentId, http::respond(updated, taskJson), changesPlan);
         }),
         {Put});
 

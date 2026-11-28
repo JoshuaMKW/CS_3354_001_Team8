@@ -42,6 +42,14 @@ struct Task {
     Timestamp createdAt = 0;
 
     bool isOverdue(Timestamp now) const { return status != TaskStatus::Completed && dueAt < now; }
+
+    // Whether going from `before` to this task changes what the planner works with: it reads
+    // only the title, due time, estimate and whether the task is completed. Notes, course,
+    // priority, type and Not started vs In progress don't change the plan.
+    bool changesPlanFrom(const Task& before) const {
+        return title != before.title || dueAt != before.dueAt || estimatedMinutes != before.estimatedMinutes ||
+               (status == TaskStatus::Completed) != (before.status == TaskStatus::Completed);
+    }
 };
 
 // FR-24: filter by course or date.
