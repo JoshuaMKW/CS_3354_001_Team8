@@ -8,7 +8,10 @@
 #include "agent/AgentController.h"
 #include "agent/GeminiClient.h"
 #include "common/Json.h"
+#include "schedule/ScheduleShareRepository.h"
+#include "schedule/ScheduleSharing.h"
 #include "schedule/ScheduleController.h"
+#include "tests/Fakes.h"
 #include "tests/ApiFixture.h"
 
 namespace cramberry {
@@ -243,7 +246,11 @@ TEST_F(AgentTest, ChatIsUnavailableWithoutGeminiOrWhenItFails) {
 class ScheduleTest : public ApiFixture {
 protected:
     std::string alice = addStudent("alice@utd.edu");
+    std::string bob = addStudent("bob@utd.edu");
     ScheduleController controller{schedules, settings, taskRepo, users};
+    SqlScheduleShareRepository shareRepo{*db};
+    RecordingGateway notificationGateway;
+    ScheduleSharingController sharing{shareRepo, schedules, users, notificationGateway};
 };
 
 TEST_F(ScheduleTest, MoveBlockKeepsPreferencesValid) {
@@ -274,6 +281,57 @@ TEST_F(ScheduleTest, ExportsICalendar) {
     EXPECT_THAT(ics.value(), HasSubstr("DTSTART:20261124T180000Z\r\n"));
     EXPECT_THAT(ics.value(), HasSubstr("SUMMARY:Due: Essay\\, final\\; v2\r\n"));
     EXPECT_THAT(ics.value(), HasSubstr("END:VCALENDAR\r\n"));
+}
+
+TEST_F(ScheduleTest, ExportsAnEmptyScheduleAsAnEmptyCalendar) {
+    const auto ics = controller.exportIcs(alice, kNow);
+    ASSERT_TRUE(ics.ok()) << ics.error().message;
+    EXPECT_THAT(ics.value(), HasSubstr("BEGIN:VCALENDAR\r\n"));
+    EXPECT_THAT(ics.value(), HasSubstr("END:VCALENDAR\r\n"));
+    EXPECT_THAT(ics.value(), ::testing::Not(HasSubstr("BEGIN:VEVENT")));
+}
+
+TEST_F(ScheduleTest, SharesScheduleWithRegisteredRecipientAndReflectsOwnerChanges) {
+    schedules.replace(alice, {{"Essay", "task-1", {Day::Mon, hm(16), hm(17)}}});
+
+    const auto created = sharing.shareWith(alice, " BOB@UTD.EDU ", kNow);
+    ASSERT_TRUE(created.ok()) << created.error().message;
+    EXPECT_EQ(created.value().recipientId, bob);
+    ASSERT_THAT(notificationGateway.sent, SizeIs(1));
+    EXPECT_EQ(notificationGateway.sent[0].studentId, bob);
+
+    const auto view = sharing.viewShared(bob, created.value().id);
+    ASSERT_TRUE(view.ok()) << view.error().message;
+    ASSERT_THAT(view.value().blocks, SizeIs(1));
+    EXPECT_EQ(view.value().blocks[0].title, "Essay");
+
+    schedules.replace(alice, {{"Lab", "task-2", {Day::Tue, hm(18), hm(19)}}});
+    const auto updated = sharing.viewShared(bob, created.value().id);
+    ASSERT_TRUE(updated.ok());
+    ASSERT_THAT(updated.value().blocks, SizeIs(1));
+    EXPECT_EQ(updated.value().blocks[0].title, "Lab");
+}
+
+TEST_F(ScheduleTest, SharedScheduleIsPrivateToRecipientAndCanBeRevoked) {
+    const auto created = sharing.shareWith(alice, "bob@utd.edu", kNow);
+    ASSERT_TRUE(created.ok());
+
+    EXPECT_FALSE(sharing.viewShared(alice, created.value().id).ok());
+    EXPECT_FALSE(sharing.viewShared(bob, "not-a-share").ok());
+    ASSERT_TRUE(sharing.revoke(alice, created.value().id).ok());
+    EXPECT_FALSE(sharing.viewShared(bob, created.value().id).ok());
+}
+
+TEST_F(ScheduleTest, RejectsInvalidRecipientsAndDoesNotDuplicateSharesOrNotifications) {
+    EXPECT_FALSE(sharing.shareWith(alice, "not-an-email", kNow).ok());
+    EXPECT_FALSE(sharing.shareWith(alice, "unknown@utd.edu", kNow).ok());
+    EXPECT_FALSE(sharing.shareWith(alice, "alice@utd.edu", kNow).ok());
+
+    ASSERT_TRUE(sharing.shareWith(alice, "bob@utd.edu", kNow).ok());
+    ASSERT_TRUE(sharing.shareWith(alice, "BOB@UTD.EDU", kNow + 1).ok());
+    EXPECT_THAT(sharing.listOwnedShares(alice), SizeIs(1));
+    EXPECT_THAT(sharing.listReceivedShares(bob), SizeIs(1));
+    EXPECT_THAT(notificationGateway.sent, SizeIs(1));
 }
 
 TEST_F(ScheduleTest, DashboardShowsTodayUpcomingAndOverdue) {

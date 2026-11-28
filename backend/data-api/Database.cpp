@@ -71,6 +71,14 @@ constexpr std::array kSchema = {
         end_minute INTEGER NOT NULL,
         sort_order INTEGER NOT NULL))",
     R"(CREATE INDEX IF NOT EXISTS study_blocks_student ON study_blocks (student_id))",
+    R"(CREATE TABLE IF NOT EXISTS schedule_shares (
+        id TEXT PRIMARY KEY,
+        owner_student_id TEXT NOT NULL REFERENCES students(id) ON DELETE CASCADE,
+        recipient_student_id TEXT NOT NULL REFERENCES students(id) ON DELETE CASCADE,
+        created_at BIGINT NOT NULL,
+        UNIQUE (owner_student_id, recipient_student_id),
+        CHECK (owner_student_id <> recipient_student_id)))",
+    R"(CREATE INDEX IF NOT EXISTS schedule_shares_recipient ON schedule_shares (recipient_student_id))",
     R"(CREATE TABLE IF NOT EXISTS notifications (
         id TEXT PRIMARY KEY,
         student_id TEXT NOT NULL REFERENCES students(id) ON DELETE CASCADE,

@@ -12,6 +12,7 @@ The Cramberry backend (`cramberry_server`) serves a JSON REST API. By default it
 - [Study preferences](#study-preferences)
 - [AI planning and chat](#ai-planning-and-chat)
 - [Schedule](#schedule)
+- [Schedule sharing](#schedule-sharing)
 - [Dashboard](#dashboard)
 - [Notifications](#notifications)
 - [Status codes](#status-codes)
@@ -568,6 +569,48 @@ Clears the schedule.
 Downloads an iCalendar (RFC 5545) file. Content type is `text/calendar; charset=utf-8`, with `Content-Disposition: attachment; filename="cramberry-schedule.ics"`. The file contains:
 - This week's study blocks, as `Study: <title>` events.
 - Every unfinished task due in the future, as `Due: <title>` events.
+
+## Schedule sharing
+
+Schedule sharing is limited to registered recipients. All routes require the normal
+`Authorization: Bearer <token>` header. Shared views are read-only and load the
+owner's current schedule when requested; recipients cannot use the share ID without
+signing in as the invited account. Revoking a share immediately prevents later reads.
+The API returns fresh data each time, so a client can refresh the shared view to see
+owner edits; push-based live refresh is not provided.
+
+### `POST /api/schedule/shares`
+
+Share the signed-in student's schedule with a registered account:
+
+```json
+{"email":"bob@example.com"}
+```
+
+**201 Created** returns the share ID, recipient details, and the relative
+`viewEndpoint` for the shared view. The recipient gets an in-app notification.
+Reauthenticating as the invited account is required to use that endpoint.
+Repeating the request for the same recipient returns the existing share and does
+not send a duplicate notification.
+
+### `GET /api/schedule/shares`
+
+List recipients who can view the signed-in student's schedule.
+
+### `DELETE /api/schedule/shares/{shareId}`
+
+Revoke a share owned by the signed-in student.
+
+**204 No Content**
+
+### `GET /api/schedule/shared-with-me`
+
+List shares sent to the signed-in student.
+
+### `GET /api/schedule/shared-with-me/{shareId}`
+
+Read the latest schedule for an active share addressed to the signed-in student.
+An unknown, revoked, or another student's share returns `404`.
 
 ---
 

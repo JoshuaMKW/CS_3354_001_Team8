@@ -36,6 +36,9 @@
 #include "schedule/ScheduleController.h"
 #include "schedule/ScheduleRepository.h"
 #include "schedule/ScheduleRoutes.h"
+#include "schedule/ScheduleShareRepository.h"
+#include "schedule/ScheduleSharing.h"
+#include "schedule/ScheduleSharingRoutes.h"
 #include "settings/SettingsController.h"
 #include "settings/SettingsRoutes.h"
 #include "settings/SqlSettingsRepository.h"
@@ -116,6 +119,7 @@ int main() {
         SqlUserRepository users(*db);
         SqlTaskRepository tasks(*db);
         SqlScheduleRepository schedules(*db);
+        SqlScheduleShareRepository scheduleShares(*db);
         SqlSettingsRepository settings(*db);
         SqlNotificationRepository notificationSettings(*db);
         SqlInbox inbox(*db);
@@ -155,6 +159,8 @@ int main() {
         SettingsController settingsController(settings, schedules, regenerator);
         NotificationController notificationController(notificationSettings);
         ScheduleController scheduleController(schedules, settings, tasks, users);
+        InboxGateway inboxGateway(inbox);
+        ScheduleSharingController scheduleSharing(scheduleShares, schedules, users, inboxGateway);
 
         // ---- routes ----
         auto& app = drogon::app();
@@ -164,6 +170,7 @@ int main() {
                            autoReplan ? TasksChanged([&regenerator](const std::string& id) { regenerator.request(id); })
                                       : TasksChanged{});
         registerScheduleRoutes(app, scheduleController, guard);
+        registerScheduleSharingRoutes(app, scheduleSharing, guard);
         registerAgentRoutes(app, agent, guard);
         registerSettingsRoutes(app, settingsController, settings, guard);
         registerNotificationRoutes(app, notificationController, notificationSettings, inbox, guard);
@@ -187,8 +194,7 @@ int main() {
 
         // ---- UC-16 deadline reminders, checked once a minute on their own thread ----
         SqlDeadlineSource deadlines(*db);
-        InboxGateway gateway(inbox);
-        ReminderScheduler reminders(notificationSettings, deadlines, gateway);
+        ReminderScheduler reminders(notificationSettings, deadlines, inboxGateway);
         trantor::EventLoopThread reminderThread("reminders");
         reminderThread.run();
         reminderThread.getLoop()->runEvery(60.0, [&reminders] {

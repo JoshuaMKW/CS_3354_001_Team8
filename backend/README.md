@@ -6,7 +6,7 @@ The folder layout follows the Development View. Each module has a **repository**
 | :--- | :--- |
 | `user/` | Accounts, sign-in sessions, password hashing (FR-1, FR-2, FR-14) |
 | `tasks/` | Courses, assignments, exams, status, filters, weekly report (UC-13, UC-14) |
-| `schedule/` | Accepted study schedule, moving blocks, `.ics` export, dashboard (UC-4, UC-6, UC-8) |
+| `schedule/` | Accepted study schedule, sharing, moving blocks, `.ics` export, dashboard (UC-4, UC-6, UC-8, UC-9) |
 | `agent/` | Gemini client, local fallback planner, schedule generation, chatbot (UC-5, UC-7, UC-12) |
 | `settings/` | Study preferences (UC-15) |
 | `notifications/` | Notification settings, deadline reminders, in-app inbox (UC-16) |
@@ -91,6 +91,8 @@ Every route except register, login and health needs `Authorization: Bearer <toke
 | `GET /api/agent/runs` | Recent generation attempts |
 | `GET`, `DELETE /api/schedule`, `PATCH /api/schedule/blocks` | View, clear, or move a block |
 | `GET /api/schedule/export.ics` | Download the plan and deadlines as iCalendar |
+| `POST`, `GET /api/schedule/shares`; `DELETE /api/schedule/shares/{shareId}` | Share with a registered recipient, list, or revoke access |
+| `GET /api/schedule/shared-with-me`, `GET /api/schedule/shared-with-me/{shareId}` | List shared schedules and view the latest shared schedule |
 | `GET /api/dashboard` | Today's blocks, upcoming and overdue tasks, counts |
 | `GET /api/health` | Database and AI status |
 
@@ -105,12 +107,23 @@ Every route except register, login and health needs `Authorization: Bearer <toke
 | [`tests/test_local_planner.cpp`](tests/test_local_planner.cpp) | Fallback planner and the mapping from tasks to the weekly plan |
 | [`tests/test_repositories.cpp`](tests/test_repositories.cpp) | SQL repositories, transactions, reminders into the inbox |
 | [`tests/test_api_support.cpp`](tests/test_api_support.cpp) | JSON, Gemini answer handling, AI fallback, moving blocks, export, dashboard |
+| [`tests/test_schedule_acceptance.cpp`](tests/test_schedule_acceptance.cpp) | KT acceptance cases TC-08-01 to TC-08-04 and TC-09-01 to TC-09-06 |
 
 The API tests use a fresh in-memory SQLite database per test. In-memory fakes stand in for Gemini and the Notification Service, so the tests never touch real data or the network. The JA test cases are written up in [`docs/testing/JA_Test_Cases.md`](../docs/testing/JA_Test_Cases.md).
+
+Build and run only the schedule acceptance tests from the repository root:
+
+```powershell
+cmake --build backend\out\build --config Debug --target cramberry_schedule_acceptance_tests
+.\backend\out\build\Debug\cramberry_schedule_acceptance_tests.exe
+```
+
+The original API tests remain in the separate `cramberry_api_tests` executable.
 
 ## Known limits
 
 - Email and SMS reminders are stored in the in-app inbox and logged. Delivering them needs a provider plugged into `InboxGateway`.
 - Reminder de-duplication is held in memory, so restarting the server can resend a reminder that is still inside its window.
 - Time zones are fixed UTC offsets, with no daylight-saving rules.
-- MFA (FR-5), schedule sharing (FR-9) and syllabus upload (UC-3) are not implemented yet.
+- Shared schedule views fetch the owner's latest schedule on each API request. Push-based live refresh in a frontend client is not implemented.
+- MFA (FR-5) and syllabus upload (UC-3) are not implemented yet.
