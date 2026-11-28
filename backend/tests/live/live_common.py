@@ -170,10 +170,10 @@ class Report:
         lines = [f"# {self.title}", "", "| Item | Value |", "| :--- | :--- |"]
         lines += [f"| {k} | {_cell(v)} |" for k, v in env_rows]
         lines += ["", f"**{len(self.cases)} run, {passed} Pass, {len(self.cases) - passed} Fail.**", "",
-                  "| Test case ID | Requirement / use case | Tester | Inputs | Expected result | Actual result | Pass/Fail |",
-                  "| :--- | :--- | :--- | :--- | :--- | :--- | :--- |"]
+                  "| Test case ID | Requirement / use case | Test author | Tester | Inputs | Expected result | Actual result | Pass/Fail |",
+                  "| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |"]
         for c in self.cases:
-            lines.append(f"| {c['id']} {_cell(c['title'])} | {_cell(c['requirement'])} | {_cell(self.tester)} | "
+            lines.append(f"| {c['id']} {_cell(c['title'])} | {_cell(c['requirement'])} | {_cell(self.author)} | {_cell(self.tester)} | "
                          f"{_cell(c['inputs'])} | {_cell(c['expected'])} | {_cell(c['actual'])} | **{c['status']}** |")
         lines += ["", "## Checks", ""]
         for c in self.cases:

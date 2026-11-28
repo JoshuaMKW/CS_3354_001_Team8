@@ -35,30 +35,30 @@ The planner only uses study hours still ahead in the current week, so each scrip
 
 ## UC-2 User logging in, by James Reid Thompson (RE)
 
-| Test case | Requirement | Result |
-| :--- | :--- | :--- |
-| TC-02-01 Signing up creates the account and signs the student in | FR-1, UC-2 | Pass |
-| TC-02-02 A weak password is refused and no account is created | FR-1, UC-2 | Pass |
-| TC-02-03 An email that is already registered can't be used again, whatever its case | FR-1, UC-2 | Pass |
-| TC-02-04 The right email and password sign the student in | FR-1, UC-2 | Pass |
-| TC-02-05 A wrong password and an unknown email get the same answer | FR-1, UC-2 | Pass |
-| TC-02-06 After logging out, the session no longer works | FR-1, UC-2 | Pass |
-| TC-02-07 Made-up tokens are refused, and a session expires after 7 days | FR-1, UC-2 | Pass |
+| Test case | Requirement | Test author | Tester | Result |
+| :--- | :--- | :--- | :--- | :--- |
+| TC-02-01 Signing up creates the account and signs the student in | FR-1, UC-2 | James Reid Thompson (RE) | Ahnaf Adib (AA) | Pass |
+| TC-02-02 A weak password is refused and no account is created | FR-1, UC-2 | James Reid Thompson (RE) | Ahnaf Adib (AA) | Pass |
+| TC-02-03 An email that is already registered can't be used again, whatever its case | FR-1, UC-2 | James Reid Thompson (RE) | Ahnaf Adib (AA) | Pass |
+| TC-02-04 The right email and password sign the student in | FR-1, UC-2 | James Reid Thompson (RE) | Ahnaf Adib (AA) | Pass |
+| TC-02-05 A wrong password and an unknown email get the same answer | FR-1, UC-2 | James Reid Thompson (RE) | Ahnaf Adib (AA) | Pass |
+| TC-02-06 After logging out, the session no longer works | FR-1, UC-2 | James Reid Thompson (RE) | Ahnaf Adib (AA) | Pass |
+| TC-02-07 Made-up tokens are refused, and a session expires after 7 days | FR-1, UC-2 | James Reid Thompson (RE) | Ahnaf Adib (AA) | Pass |
 
 TC-02-07 moves one session's `expires_at` in the Supabase `sessions` table to 2 minutes before and 1 minute after the 7-day limit, and checks that the server accepts and then refuses it.
 
 ## UC-3 Upload class syllabus and UC-4 View schedule, by Jonathan Lee (JO)
 
-| Test case | Requirement | Result |
-| :--- | :--- | :--- |
-| TC-03-01 Valid syllabus imports its deadline | UC-3, syllabus import | Fail |
-| TC-03-02 Syllabus with no deadlines leaves existing data | UC-3, syllabus import | Pass |
-| TC-03-03 Invalid file is rejected | UC-3, syllabus import | Fail |
-| TC-03-04 Timeout during upload keeps existing data | UC-3, syllabus import | Pass |
-| TC-04-01 Deadlines are shown in date order | UC-4 View Schedule | Pass |
-| TC-04-02 Empty schedule shows a no-events message | UC-4 View Schedule | Fail |
-| TC-04-03 Another student's events are not shown | UC-4, secure access to a student's schedule | Pass |
-| TC-04-04 Database outage shows an error, not an empty calendar | UC-4 View Schedule | Fail |
+| Test case | Requirement | Test author | Tester | Result |
+| :--- | :--- | :--- | :--- | :--- |
+| TC-03-01 Valid syllabus imports its deadline | UC-3, syllabus import | Jonathan Lee (JO) | Ahnaf Adib (AA) | Fail |
+| TC-03-02 Syllabus with no deadlines leaves existing data | UC-3, syllabus import | Jonathan Lee (JO) | Ahnaf Adib (AA) | Pass |
+| TC-03-03 Invalid file is rejected | UC-3, syllabus import | Jonathan Lee (JO) | Ahnaf Adib (AA) | Fail |
+| TC-03-04 Timeout during upload keeps existing data | UC-3, syllabus import | Jonathan Lee (JO) | Ahnaf Adib (AA) | Pass |
+| TC-04-01 Deadlines are shown in date order | UC-4 View Schedule | Jonathan Lee (JO) | Ahnaf Adib (AA) | Pass |
+| TC-04-02 Empty schedule shows a no-events message | UC-4 View Schedule | Jonathan Lee (JO) | Ahnaf Adib (AA) | Fail |
+| TC-04-03 Another student's events are not shown | UC-4, secure access to a student's schedule | Jonathan Lee (JO) | Ahnaf Adib (AA) | Pass |
+| TC-04-04 Database outage shows an error, not an empty calendar | UC-4 View Schedule | Jonathan Lee (JO) | Ahnaf Adib (AA) | Fail |
 
 The upload cases run on the Upload Syllabus page in the browser, because the app reads the syllabus in the browser and saves each deadline through `POST /api/tasks`. The syllabus file is `CS3345_Fall2026.txt`. TC-04-04 cuts the second server's database connection after the student signs in.
 
@@ -70,18 +70,18 @@ Failures:
 
 ## UC-8 Export schedule and UC-9 Share / view schedule, by Kevin Tran (KT)
 
-| Test case | Requirement | Result |
-| :--- | :--- | :--- |
-| TC-08-01 Exports a populated schedule | UC-8, export schedule as a file | Pass |
-| TC-08-02 Exports an empty schedule without failing | UC-8, export schedule as a file | Pass |
-| TC-08-03 Rejects export when logged out | UC-8, export schedule as a file | Pass |
-| TC-08-04 Export failure returns a safe error and keeps the schedule | UC-8, export schedule as a file | Pass |
-| TC-09-01 Shares a schedule with a registered recipient | UC-9, share / view schedules | Pass |
-| TC-09-02 Recipient views the shared schedule | UC-9, share / view schedules | Fail |
-| TC-09-03 Shared schedule reflects the owner's edit on refresh | UC-9, sharing updates in real time | Fail |
-| TC-09-04 Rejects an invalid or unregistered recipient | UC-9, share / view schedules | Pass |
-| TC-09-05 Denies unauthorized and unauthenticated shared schedule access | UC-9, share / view schedules | Pass |
-| TC-09-06 Deleted event disappears from the shared schedule | UC-9, sharing updates in real time | Fail |
+| Test case | Requirement | Test author | Tester | Result |
+| :--- | :--- | :--- | :--- | :--- |
+| TC-08-01 Exports a populated schedule | UC-8, export schedule as a file | Kevin Tran (KT) | Ahnaf Adib (AA) | Pass |
+| TC-08-02 Exports an empty schedule without failing | UC-8, export schedule as a file | Kevin Tran (KT) | Ahnaf Adib (AA) | Pass |
+| TC-08-03 Rejects export when logged out | UC-8, export schedule as a file | Kevin Tran (KT) | Ahnaf Adib (AA) | Pass |
+| TC-08-04 Export failure returns a safe error and keeps the schedule | UC-8, export schedule as a file | Kevin Tran (KT) | Ahnaf Adib (AA) | Pass |
+| TC-09-01 Shares a schedule with a registered recipient | UC-9, share / view schedules | Kevin Tran (KT) | Ahnaf Adib (AA) | Pass |
+| TC-09-02 Recipient views the shared schedule | UC-9, share / view schedules | Kevin Tran (KT) | Ahnaf Adib (AA) | Fail |
+| TC-09-03 Shared schedule reflects the owner's edit on refresh | UC-9, sharing updates in real time | Kevin Tran (KT) | Ahnaf Adib (AA) | Fail |
+| TC-09-04 Rejects an invalid or unregistered recipient | UC-9, share / view schedules | Kevin Tran (KT) | Ahnaf Adib (AA) | Pass |
+| TC-09-05 Denies unauthorized and unauthenticated shared schedule access | UC-9, share / view schedules | Kevin Tran (KT) | Ahnaf Adib (AA) | Pass |
+| TC-09-06 Deleted event disappears from the shared schedule | UC-9, sharing updates in real time | Kevin Tran (KT) | Ahnaf Adib (AA) | Fail |
 
 The frontend has no sharing page, so the sharing cases call the routes in `backend/API.md`. Export calls the same route as the Schedule page's export button.
 
@@ -91,16 +91,16 @@ Failures:
 
 ## UC-5 Generate AI study schedule and UC-7 Interact with AI chatbot, by Nishanth Kandula (NK)
 
-| Test case | Requirement | Result |
-| :--- | :--- | :--- |
-| TC-05-01 Generate a conflict-free weekly plan | UC-5, FR-16 | Pass |
-| TC-05-02 Insufficient time before deadline | UC-5, FR-16 | Fail |
-| TC-05-03 Reject reversed availability hours | UC-5, FR-16 | Pass |
-| TC-05-04 Sync tasks, calendar, and AI schedule | UC-5, FR-16 | Pass |
-| TC-07-01 Answer a saved task question | UC-7, FR-20 | Fail |
-| TC-07-02 Move a study block through chat | UC-7, FR-20 | Fail |
-| TC-07-03 Reject a nonexistent task update | UC-7, FR-20 | Pass |
-| TC-07-04 Create and schedule a task via chat | UC-7, FR-20 | Fail |
+| Test case | Requirement | Test author | Tester | Result |
+| :--- | :--- | :--- | :--- | :--- |
+| TC-05-01 Generate a conflict-free weekly plan | UC-5, FR-16 | Nishanth Kandula (NK) | Ahnaf Adib (AA) | Pass |
+| TC-05-02 Insufficient time before deadline | UC-5, FR-16 | Nishanth Kandula (NK) | Ahnaf Adib (AA) | Fail |
+| TC-05-03 Reject reversed availability hours | UC-5, FR-16 | Nishanth Kandula (NK) | Ahnaf Adib (AA) | Pass |
+| TC-05-04 Sync tasks, calendar, and AI schedule | UC-5, FR-16 | Nishanth Kandula (NK) | Ahnaf Adib (AA) | Pass |
+| TC-07-01 Answer a saved task question | UC-7, FR-20 | Nishanth Kandula (NK) | Ahnaf Adib (AA) | Fail |
+| TC-07-02 Move a study block through chat | UC-7, FR-20 | Nishanth Kandula (NK) | Ahnaf Adib (AA) | Fail |
+| TC-07-03 Reject a nonexistent task update | UC-7, FR-20 | Nishanth Kandula (NK) | Ahnaf Adib (AA) | Pass |
+| TC-07-04 Create and schedule a task via chat | UC-7, FR-20 | Nishanth Kandula (NK) | Ahnaf Adib (AA) | Fail |
 
 Each case enters a fixed class as personal time in the study preferences. The chat cases use the AI Assistant page's message box, `POST /api/agent/chat`.
 
@@ -111,14 +111,14 @@ Failures:
 
 ## UC-15 Manage study preferences and UC-16 Update notification settings, by Joshua Alston (JA)
 
-| Test case | Requirement | Result |
-| :--- | :--- | :--- |
-| TC-15-01 Save valid study preferences | UC-15, FR-7, NFR-2 | Pass |
-| TC-15-02 Personal time conflict | UC-15 CheckForConflicts() exception | Pass |
-| TC-15-03 Break longer than session | UC-15 validation | Pass |
-| TC-15-04 Schedule follows preferences | UC-15 and UC-5, FR-16 | Pass |
-| TC-16-01 Opt in to email reminders | UC-16, FR-12 | Pass |
-| TC-16-03 Invalid phone number | UC-16, FR-12 | Pass |
+| Test case | Requirement | Test author | Tester | Result |
+| :--- | :--- | :--- | :--- | :--- |
+| TC-15-01 Save valid study preferences | UC-15, FR-7, NFR-2 | Joshua Alston (JA) | Ahnaf Adib (AA) | Pass |
+| TC-15-02 Personal time conflict | UC-15 CheckForConflicts() exception | Joshua Alston (JA) | Ahnaf Adib (AA) | Pass |
+| TC-15-03 Break longer than session | UC-15 validation | Joshua Alston (JA) | Ahnaf Adib (AA) | Pass |
+| TC-15-04 Schedule follows preferences | UC-15 and UC-5, FR-16 | Joshua Alston (JA) | Ahnaf Adib (AA) | Pass |
+| TC-16-01 Opt in to email reminders | UC-16, FR-12 | Joshua Alston (JA) | Ahnaf Adib (AA) | Pass |
+| TC-16-03 Invalid phone number | UC-16, FR-12 | Joshua Alston (JA) | Ahnaf Adib (AA) | Pass |
 
 These cases run on the Study Planner settings, Create Schedule, View Schedule and Notifications pages in Chromium, and check the `study_preferences` and `notification_settings` rows in Supabase.
 
