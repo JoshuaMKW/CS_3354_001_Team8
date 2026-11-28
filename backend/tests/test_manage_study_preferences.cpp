@@ -1,5 +1,5 @@
 // UC-15 Manage Study Preferences: TC-15-01 to TC-15-04.
-// Test author: Joshua Alston (JA). See docs/testing/JA_Test_Cases.md.
+// Test author: Joshua Alston (JA). See docs/testing/JA/test_cases.md.
 
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>

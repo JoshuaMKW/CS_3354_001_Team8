@@ -11,8 +11,8 @@ IDs follow the team's `TC-<use case>-<n>` scheme. The Assignment 5 tests below r
 
 These tests run against the real application: `cramberry_server` connected to Supabase, with Claude Haiku 5.5 generating schedules through OpenRouter. They call the HTTP API the same way the frontend does, then check the rows in Supabase directly. Every test uses the one test account (`student@cramberry.test`), whose data is cleared before each test, so no real data is touched and no extra users are left behind. TC-NFR19-02 needs a second student to try to reach the first one's data, so it creates a temporary one and deletes it when the test ends.
 
-**Script:** [`backend/tests/live/aa_live_tests.py`](../../backend/tests/live/aa_live_tests.py)
-**Results:** [`AA-results/AA-live-results-2026-11-27.txt`](AA-results/AA-live-results-2026-11-27.txt)
+**Script:** [`backend/tests/live/aa_live_tests.py`](../../../backend/tests/live/aa_live_tests.py)
+**Results:** [`results.txt`](results.txt)
 
 ### Test environment
 
@@ -208,7 +208,7 @@ AI generation is excluded from NFR-18. For reference, TC-10-02 took 3,184 ms, an
 
 **What these tests cover.** These tests check the Assignment 4 design classes (`SchedulingRequestController`, `StudentDataController`, `ScheduleGenerationService`). The running server doesn't use those classes; the Assignment 5 tests above check the live routes instead.
 
-**How these tests run.** Every Assignment 4 test is an automated GoogleTest case in `backend/tests/`. The Task Management System, Schedule System, Supabase and Gemini are replaced by in-memory fakes (at the top of `backend/tests/test_aa.cpp`), so the tests need no network and never touch a real student's data. Test data uses a fixed clock: **now = Mon 16 Nov 2026, 12:00 UTC**. Results below come from the run saved in [`AA-results/AA-mac-test-results.txt`](AA-results/AA-mac-test-results.txt).
+**How these tests run.** Every Assignment 4 test is an automated GoogleTest case in `backend/tests/`. The Task Management System, Schedule System, Supabase and Gemini are replaced by in-memory fakes (at the top of `backend/tests/test_aa.cpp`), so the tests need no network and never touch a real student's data. Test data uses a fixed clock: **now = Mon 16 Nov 2026, 12:00 UTC**. Results below come from the run saved in [`logs/mac-test-results.txt`](logs/mac-test-results.txt).
 
 To run them:
 

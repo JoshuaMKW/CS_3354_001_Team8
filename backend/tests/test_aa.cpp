@@ -1,5 +1,5 @@
 // AA tests (Ahnaf Adib): UC-10, UC-11, UC-12, NFR-18 and NFR-19.
-// TC-10-01, TC-11-01, TC-12-01, TC-NFR18-01, TC-NFR19-01. See docs/testing/AA_Test_Cases.md.
+// TC-10-01, TC-11-01, TC-12-01, TC-NFR18-01, TC-NFR19-01. See docs/testing/AA/test_cases.md.
 // The Task Management System, Schedule System, Supabase and Gemini are replaced by the in-memory
 // fakes below, so the tests need no network and never touch real student data.
 

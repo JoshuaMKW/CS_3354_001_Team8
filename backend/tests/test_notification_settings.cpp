@@ -1,5 +1,5 @@
 // UC-16 Update Notification Settings: TC-16-01 to TC-16-04.
-// Test author: Joshua Alston (JA). See docs/testing/JA_Test_Cases.md.
+// Test author: Joshua Alston (JA). See docs/testing/JA/test_cases.md.
 
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>

@@ -108,9 +108,9 @@ Every route except register, login and health needs `Authorization: Bearer <toke
 | [`tests/test_rm_tasks.cpp`](tests/test_rm_tasks.cpp) | Risha Mothukuru (RM), Assignment 4: task status and weekly report on `tasks/RMTaskController` (UC-13, UC-14) |
 | [`tests/test_jo_schedule.cpp`](tests/test_jo_schedule.cpp) | Jonathan Lee (JO), Assignment 4: syllabus upload and view schedule on `schedule/UploadSchedule` and `schedule/ViewSchedule` |
 | [`tests/test_aa.cpp`](tests/test_aa.cpp) | UC-10, UC-11, UC-12, NFR-18, NFR-19 on the Assignment 4 design classes: TC-10-01, TC-11-01, TC-12-01, TC-NFR18-01, TC-NFR19-01 |
-| [`tests/live/aa_live_tests.py`](tests/live/aa_live_tests.py) | Not part of `ctest`. Runs against a live server and Supabase: TC-10-02 to TC-10-04, TC-11-02, TC-12-02, TC-12-03, TC-NFR18-02, TC-NFR19-02. How to run it is in [`docs/testing/AA_Test_Cases.md`](../docs/testing/AA_Test_Cases.md). |
+| [`tests/live/aa_live_tests.py`](tests/live/aa_live_tests.py) | Not part of `ctest`. Runs against a live server and Supabase: TC-10-02 to TC-10-04, TC-11-02, TC-12-02, TC-12-03, TC-NFR18-02, TC-NFR19-02. How to run it is in [`docs/testing/AA/test_cases.md`](../docs/testing/AA/test_cases.md). |
 
-The `ctest` tests use a fresh in-memory SQLite database per test. In-memory fakes stand in for the AI and the Notification Service, so the tests never touch real data or the network. The test cases are written up in [`docs/testing/JA_Test_Cases.md`](../docs/testing/JA_Test_Cases.md) and [`docs/testing/AA_Test_Cases.md`](../docs/testing/AA_Test_Cases.md).
+The `ctest` tests use a fresh in-memory SQLite database per test. In-memory fakes stand in for the AI and the Notification Service, so the tests never touch real data or the network. The test cases are written up in [`docs/testing/JA/test_cases.md`](../docs/testing/JA/test_cases.md) and [`docs/testing/AA/test_cases.md`](../docs/testing/AA/test_cases.md).
 
 Build and run only the schedule acceptance tests from the repository root:
 

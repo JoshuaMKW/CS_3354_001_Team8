@@ -161,9 +161,8 @@ class Report:
         ]
 
     def write(self, servers, extra_environment=()):
-        out_dir = ROOT / "docs" / "testing" / f"{self.member}-results"
+        out_dir = ROOT / "docs" / "testing" / self.member
         out_dir.mkdir(parents=True, exist_ok=True)
-        stem = f"{self.member}-live-results-{self.started:%Y-%m-%d}"
         env_rows = self.environment(servers) + list(extra_environment)
         passed = sum(c["status"] == "Pass" for c in self.cases)
 
@@ -180,7 +179,7 @@ class Report:
             lines.append(f"**{c['id']}** ({c['status']})")
             lines += [f"- {'ok' if k['pass'] else 'FAILED'}: {k['check']}" for k in c["checks"]]
             lines.append("")
-        (out_dir / f"{stem}.md").write_text("\n".join(lines))
+        (out_dir / "results.md").write_text("\n".join(lines))
         print(f"\n{len(self.cases)} run, {passed} Pass, {len(self.cases) - passed} Fail")
-        print(f"Results written to {out_dir / stem}.md")
+        print(f"Results written to {out_dir / 'results.md'}")
         return 0 if passed == len(self.cases) else 1

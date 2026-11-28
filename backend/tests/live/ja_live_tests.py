@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """JA (Joshua Alston) live tests for Assignment 5: UC-15 Manage Study Preferences and
 UC-16 Update Notification Settings (TC-15-01 to TC-15-04, TC-16-01 to TC-16-04 in
-docs/testing/JA_Test_Cases.md).
+docs/testing/JA/test_cases.md).
 
 Starts its own cramberry_server on port 8101 (Supabase from backend/.env) and a Vite dev
 server for the frontend on port 3101, then drives the Study Planner settings, Create

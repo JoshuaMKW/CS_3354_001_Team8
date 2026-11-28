@@ -6,13 +6,13 @@ Every test case below ran against the running Cramberry application. The `crambe
 
 | Member | Use cases | Run | Pass | Fail | Results file |
 | :--- | :--- | ---: | ---: | ---: | :--- |
-| Ahnaf Adib (AA) | UC-10, UC-11, UC-12 | 6 | 6 | 0 | [AA_Test_Cases.md](AA_Test_Cases.md) |
-| Risha Mothukuru (RM) | UC-13, UC-14 | 6 | 6 | 0 | [RM_Assignment5.md](RM_Assignment5.md) |
-| James Reid Thompson (RE) | UC-2 | 7 | 7 | 0 | [RE-results](RE-results/RE-live-results-2026-11-27.md) |
-| Jonathan Lee (JO) | UC-3, UC-4 | 8 | 4 | 4 | [JO-results](JO-results/JO-live-results-2026-11-27.md) |
-| Kevin Tran (KT) | UC-8, UC-9 | 10 | 7 | 3 | [KT-results](KT-results/KT-live-results-2026-11-27.md) |
-| Nishanth Kandula (NK) | UC-5, UC-7 | 8 | 4 | 4 | [NK-results](NK-results/NK-live-results-2026-11-27.md) |
-| Joshua Alston (JA) | UC-15, UC-16 | 6 | 6 | 0 | [JA-results](JA-results/JA-live-results-2026-11-27.md) |
+| Ahnaf Adib (AA) | UC-10, UC-11, UC-12 | 6 | 6 | 0 | [AA/test_cases.md](AA/test_cases.md) |
+| Risha Mothukuru (RM) | UC-13, UC-14 | 6 | 6 | 0 | [RM/test_cases.md](RM/test_cases.md) |
+| James Reid Thompson (RE) | UC-2 | 7 | 7 | 0 | [RE/results.md](RE/results.md) |
+| Jonathan Lee (JO) | UC-3, UC-4 | 8 | 4 | 4 | [JO/results.md](JO/results.md) |
+| Kevin Tran (KT) | UC-8, UC-9 | 10 | 7 | 3 | [KT/results.md](KT/results.md) |
+| Nishanth Kandula (NK) | UC-5, UC-7 | 8 | 4 | 4 | [NK/results.md](NK/results.md) |
+| Joshua Alston (JA) | UC-15, UC-16 | 6 | 6 | 0 | [JA/results.md](JA/results.md) |
 | **Team** | | **51** | **40** | **11** | |
 
 ## How to run
@@ -29,7 +29,7 @@ TESTER="Your Name (XX)" python3 backend/tests/live/nk_live_tests.py
 TESTER="Your Name (XX)" python3 backend/tests/live/ja_live_tests.py
 ```
 
-`TESTER` is written into the Tester column of the results file. The results go to `docs/testing/<member>-results/`.
+`TESTER` is written into the Tester column of the results file. The results go to `docs/testing/<member>/results.md`.
 
 The planner only uses study hours still ahead in the current week, so each script puts its test data on days that are still ahead when it runs. The Inputs column in each results file lists the dates and times used.
 
