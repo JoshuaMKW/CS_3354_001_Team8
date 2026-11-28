@@ -208,7 +208,7 @@ AI generation is excluded from NFR-18. For reference, TC-10-02 took 3,184 ms, an
 
 **What these tests cover.** These tests check the Assignment 4 design classes (`SchedulingRequestController`, `StudentDataController`, `ScheduleGenerationService`). The running server doesn't use those classes; the Assignment 5 tests above check the live routes instead.
 
-**How these tests run.** Every Assignment 4 test is an automated GoogleTest case in `backend/tests/`. The Task Management System, Schedule System, Supabase and Gemini are replaced by in-memory fakes (at the top of `backend/tests/test_aa.cpp`), so the tests need no network and never touch a real student's data. Test data uses a fixed clock: **now = Mon 16 Nov 2026, 12:00 UTC**. Results below come from the run saved in [`logs/mac-test-results.txt`](logs/mac-test-results.txt).
+**How these tests run.** Every Assignment 4 test is an automated GoogleTest case in `backend/tests/`. The Task Management System, Schedule System, Supabase and Gemini are replaced by in-memory fakes (at the top of `backend/tests/test_aa.cpp`), so the tests need no network and never touch a real student's data. Test data uses a fixed clock: **now = Mon 16 Nov 2026, 12:00 UTC**. Results below come from the run saved in [`logs/unit-test-results.txt`](logs/unit-test-results.txt).
 
 To run them:
 
