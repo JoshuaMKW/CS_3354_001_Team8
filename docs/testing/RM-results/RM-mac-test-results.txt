@@ -1,0 +1,30 @@
+Running main() from gmock_main.cc
+Note: Google Test filter = RMTasks.*
+[==========] Running 10 tests from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 10 tests from RMTasks
+[ RUN      ] RMTasks.TC_13_01_UpdateAndReload
+[       OK ] RMTasks.TC_13_01_UpdateAndReload (0 ms)
+[ RUN      ] RMTasks.TC_13_02_ReopenCompletedTask
+[       OK ] RMTasks.TC_13_02_ReopenCompletedTask (0 ms)
+[ RUN      ] RMTasks.TC_13_03_InvalidStatus
+[       OK ] RMTasks.TC_13_03_InvalidStatus (0 ms)
+[ RUN      ] RMTasks.TC_13_04_FailedSavePreservesStatus
+[       OK ] RMTasks.TC_13_04_FailedSavePreservesStatus (0 ms)
+[ RUN      ] RMTasks.TC_14_01_WeeklySummary
+[       OK ] RMTasks.TC_14_01_WeeklySummary (0 ms)
+[ RUN      ] RMTasks.TC_14_02_EmptyWeek
+[       OK ] RMTasks.TC_14_02_EmptyWeek (0 ms)
+[ RUN      ] RMTasks.TC_14_03_InvalidWeekDate
+[       OK ] RMTasks.TC_14_03_InvalidWeekDate (0 ms)
+[ RUN      ] RMTasks.TC_14_04_ReadFailureAndRecovery
+[       OK ] RMTasks.TC_14_04_ReadFailureAndRecovery (0 ms)
+[ RUN      ] RMTasks.StudentIsolation
+[       OK ] RMTasks.StudentIsolation (0 ms)
+[ RUN      ] RMTasks.WeekAndDeadlineBoundaries
+[       OK ] RMTasks.WeekAndDeadlineBoundaries (0 ms)
+[----------] 10 tests from RMTasks (0 ms total)
+
+[----------] Global test environment tear-down
+[==========] 10 tests from 1 test suite ran. (0 ms total)
+[  PASSED  ] 10 tests.

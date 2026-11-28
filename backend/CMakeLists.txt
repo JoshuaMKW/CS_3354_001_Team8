@@ -8,6 +8,7 @@ option(CRAMBERRY_BUILD_SERVER "Build the Drogon REST API server (needs Drogon, e
 
 # Use-case logic with no third-party dependencies. Builds everywhere.
 add_library(cramberry_backend
+    tasks/RMTaskController.cpp
     agent/Agent.cpp
     agent/ScheduleGenerationService.cpp
     api/SchedulingRequestController.cpp
@@ -18,6 +19,8 @@ add_library(cramberry_backend
     schedule/NKScheduleEditor.cpp
     schedule/NKScheduleRules.cpp
     settings/SettingsController.cpp
+    schedule/UploadSchedule.cpp
+    schedule/ViewSchedule.cpp
 )
 target_include_directories(cramberry_backend PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 
@@ -42,9 +45,11 @@ enable_testing()
 include(GoogleTest)
 
 add_executable(cramberry_tests
+    tests/test_rm_tasks.cpp
     tests/test_manage_study_preferences.cpp
     tests/test_notification_settings.cpp
     tests/test_aa.cpp
+    tests/test_jo_schedule.cpp
 )
 target_link_libraries(cramberry_tests PRIVATE cramberry_backend GTest::gmock_main)
 gtest_discover_tests(cramberry_tests)
