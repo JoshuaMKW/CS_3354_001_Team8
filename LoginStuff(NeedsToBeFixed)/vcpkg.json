@@ -1,0 +1,5 @@
+{
+  "name": "cramberry-auth",
+  "version": "0.1.0",
+  "dependencies": ["libsodium", "sqlite3", "cpp-httplib", "nlohmann-json", "gtest"]
+}
