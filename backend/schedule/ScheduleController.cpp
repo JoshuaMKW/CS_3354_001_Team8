@@ -86,7 +86,7 @@ Outcome<std::vector<StudyBlock>> ScheduleController::moveBlock(const std::string
             orphans.push_back({b.assignmentId, b.title, Day::Sun, kMinutesPerDay, 0});  // task deleted since
         }
     }
-    auto assignments = toAssignments(planned, weekOutcome.value());
+    auto assignments = toAssignments(planned, weekOutcome.value(), now);
     assignments.insert(assignments.end(), orphans.begin(), orphans.end());
 
     NKScheduleEditor editor(schedules_);
@@ -96,6 +96,20 @@ Outcome<std::vector<StudyBlock>> ScheduleController::moveBlock(const std::string
         return Error{ErrorCode::Unprocessable, "That change doesn't fit your study preferences", result.errors};
     }
     return result.schedule;
+}
+
+Outcome<std::vector<StudyBlock>> ScheduleController::removeBlock(const std::string& studentId,
+                                                                 const BlockRef& block) {
+    auto blocks = schedules_.getActiveStudyItems(studentId);
+    const auto matches = [&](const StudyBlock& b) {
+        return b.assignmentId == block.assignmentId && b.time == block.time;
+    };
+    if (std::count_if(blocks.begin(), blocks.end(), matches) != 1) {
+        return notFound("That block isn't on your schedule");
+    }
+    std::erase_if(blocks, matches);
+    schedules_.replace(studentId, blocks);
+    return blocks;
 }
 
 void ScheduleController::clear(const std::string& studentId) { schedules_.replace(studentId, {}); }

@@ -7,27 +7,21 @@ The folder layout follows the Development View. Each module has a **repository**
 | `user/` | Accounts, sign-in sessions, password hashing (FR-1, FR-2, FR-14) |
 | `tasks/` | Courses, assignments, exams, status, filters, weekly report (UC-13, UC-14) |
 | `schedule/` | Accepted study schedule, sharing, moving blocks, `.ics` export, dashboard (UC-4, UC-6, UC-8, UC-9) |
-| `agent/` | Gemini client, local fallback planner, schedule generation, chatbot (UC-5, UC-7, UC-12) |
+| `agent/` | AI client (OpenRouter or Gemini), local fallback planner, schedule generation, chatbot (UC-5, UC-7, UC-12) |
 | `settings/` | Study preferences (UC-15) |
 | `notifications/` | Notification settings, deadline reminders, in-app inbox (UC-16) |
 | `data-api/` | `Database` and `Transaction`, the only code that talks to the database |
 | `common/` | JSON shapes and HTTP helpers shared by the routes |
 
-| Test file | Use case | Test cases |
-| :--- | :--- | :--- |
-| [`tests/test_manage_study_preferences.cpp`](tests/test_manage_study_preferences.cpp) | UC-15 Manage Study Preferences | TC-15-01 to TC-15-04 |
-| [`tests/test_notification_settings.cpp`](tests/test_notification_settings.cpp) | UC-16 Update Notification Settings | TC-16-01 to TC-16-04 |
-| [`tests/test_aa.cpp`](tests/test_aa.cpp) | UC-10, UC-11, UC-12, NFR-18, NFR-19 | TC-10-01, TC-11-01, TC-12-01, TC-NFR18-01, TC-NFR19-01 |
+### AA design classes from Assignment 4 (Ahnaf Adib)
 
-The test cases themselves are written up in [`docs/testing/JA_Test_Cases.md`](../docs/testing/JA_Test_Cases.md) and [`docs/testing/AA_Test_Cases.md`](../docs/testing/AA_Test_Cases.md).
-
-### AA modules (Ahnaf Adib)
+These classes implement the Assignment 4 design for UC-10, UC-11 and UC-12. They are built and tested by `tests/test_aa.cpp` with in-memory fakes, but **the running server doesn't use them**: no route calls them. The live app covers the same use cases through `/api/tasks`, `/api/settings/preferences` and `/api/agent/generate` (see [API.md](API.md)).
 
 | Module | Use case | Purpose |
 | :--- | :--- | :--- |
-| `api/SchedulingRequestController` | UC-10 | `POST /api/schedule`: validates tasks, deadlines and preferences, then forwards the request to the Schedule System. |
-| `api/StudentDataController`, `data/StudentDataRepository.h` | UC-11 | `GET`/`POST`/`PATCH /api/data`: saves, retrieves and updates a student's records after checking they own them. |
-| `agent/ScheduleGenerationService` | UC-12 | Asks Gemini for a schedule, checks the JSON reply (fields, times, deadlines, overlaps) and saves it; keeps the old schedule if anything fails. |
+| `api/SchedulingRequestController` | UC-10 | Validates tasks, deadlines and preferences, then passes the request to the Schedule System. |
+| `api/StudentDataController`, `data/StudentDataRepository.h` | UC-11 | Saves, retrieves and updates a student's records after checking they own them. |
+| `agent/ScheduleGenerationService` | UC-12 | Asks an AI client for a schedule, checks the JSON reply (fields, times, deadlines, overlaps) and saves it; keeps the old schedule if anything fails. |
 | `schedule/SchedulingTypes.h` | Shared | Date/time parsing and the types passed from UC-10 to UC-12. |
 
 UC-12 uses [nlohmann/json](https://github.com/nlohmann/json) v3.11.3, which CMake downloads on the first configure along with GoogleTest.
@@ -52,7 +46,7 @@ To connect to Supabase, also configure with `-DVCPKG_MANIFEST_FEATURES=supabase`
 Start the server:
 
 ```bash
-backend/out/build/Debug/cramberry_server        # http://127.0.0.1:8080
+backend/out/build/cramberry_server        # http://127.0.0.1:8080 (in backend/out/build/Debug/ with Visual Studio)
 ```
 
 | Environment variable | Default | Purpose |
@@ -87,9 +81,10 @@ Every route except register, login and health needs `Authorization: Bearer <toke
 | `GET`, `PUT /api/settings/notifications` | Notification settings |
 | `GET /api/notifications?unread=true`, `POST /api/notifications/{id}/read`, `POST /api/notifications/read-all` | In-app inbox |
 | `POST /api/agent/generate` `{day?}` | Generate this week's (or one day's) plan |
-| `POST /api/agent/chat` `{message}` | Ask the AI assistant (503 without Gemini) |
+| `POST /api/agent/chat` `{message}` | Ask the AI assistant (503 without an AI key) |
 | `GET /api/agent/runs` | Recent generation attempts |
 | `GET`, `DELETE /api/schedule`, `PATCH /api/schedule/blocks` | View, clear, or move a block |
+| `DELETE /api/schedule/blocks` `{assignmentId, day, start, end}` | Remove one block |
 | `GET /api/schedule/export.ics` | Download the plan and deadlines as iCalendar |
 | `POST`, `GET /api/schedule/shares`; `DELETE /api/schedule/shares/{shareId}` | Share with a registered recipient, list, or revoke access |
 | `GET /api/schedule/shared-with-me`, `GET /api/schedule/shared-with-me/{shareId}` | List shared schedules and view the latest shared schedule |
@@ -106,10 +101,15 @@ Every route except register, login and health needs `Authorization: Bearer <toke
 | [`tests/test_tasks.cpp`](tests/test_tasks.cpp) | Task CRUD, status, filters, overdue, weekly report, isolation between students |
 | [`tests/test_local_planner.cpp`](tests/test_local_planner.cpp) | Fallback planner and the mapping from tasks to the weekly plan |
 | [`tests/test_repositories.cpp`](tests/test_repositories.cpp) | SQL repositories, transactions, reminders into the inbox |
-| [`tests/test_api_support.cpp`](tests/test_api_support.cpp) | JSON, Gemini answer handling, AI fallback, moving blocks, export, dashboard |
+| [`tests/test_api_support.cpp`](tests/test_api_support.cpp) | JSON, AI answer handling, AI fallback, moving and removing blocks, export, dashboard |
 | [`tests/test_schedule_acceptance.cpp`](tests/test_schedule_acceptance.cpp) | KT acceptance cases TC-08-01 to TC-08-04 and TC-09-01 to TC-09-06 |
+| [`tests/test_re_login.cpp`](tests/test_re_login.cpp) | James Reid Thompson (RE): sign-up, login and sessions, TC-02-01 to TC-02-07 |
+| [`tests/test_rm_tasks.cpp`](tests/test_rm_tasks.cpp) | Risha Mothukuru (RM), Assignment 4: task status and weekly report on `tasks/RMTaskController` (UC-13, UC-14) |
+| [`tests/test_jo_schedule.cpp`](tests/test_jo_schedule.cpp) | Jonathan Lee (JO), Assignment 4: syllabus upload and view schedule on `schedule/UploadSchedule` and `schedule/ViewSchedule` |
+| [`tests/test_aa.cpp`](tests/test_aa.cpp) | UC-10, UC-11, UC-12, NFR-18, NFR-19 on the Assignment 4 design classes: TC-10-01, TC-11-01, TC-12-01, TC-NFR18-01, TC-NFR19-01 |
+| [`tests/live/aa_live_tests.py`](tests/live/aa_live_tests.py) | Not part of `ctest`. Runs against a live server and Supabase: TC-10-02 to TC-10-04, TC-11-02, TC-12-02, TC-12-03, TC-NFR18-02, TC-NFR19-02. How to run it is in [`docs/testing/AA_Test_Cases.md`](../docs/testing/AA_Test_Cases.md). |
 
-The API tests use a fresh in-memory SQLite database per test. In-memory fakes stand in for Gemini and the Notification Service, so the tests never touch real data or the network. The JA test cases are written up in [`docs/testing/JA_Test_Cases.md`](../docs/testing/JA_Test_Cases.md).
+The `ctest` tests use a fresh in-memory SQLite database per test. In-memory fakes stand in for the AI and the Notification Service, so the tests never touch real data or the network. The test cases are written up in [`docs/testing/JA_Test_Cases.md`](../docs/testing/JA_Test_Cases.md) and [`docs/testing/AA_Test_Cases.md`](../docs/testing/AA_Test_Cases.md).
 
 Build and run only the schedule acceptance tests from the repository root:
 
@@ -126,4 +126,5 @@ The original API tests remain in the separate `cramberry_api_tests` executable.
 - Reminder de-duplication is held in memory, so restarting the server can resend a reminder that is still inside its window.
 - Time zones are fixed UTC offsets, with no daylight-saving rules.
 - Shared schedule views fetch the owner's latest schedule on each API request. Push-based live refresh in a frontend client is not implemented.
-- MFA (FR-5) and syllabus upload (UC-3) are not implemented yet.
+- MFA (FR-5) is not implemented.
+- There is no syllabus parser on the server (UC-3). The frontend's Upload Syllabus page finds dates in pasted text or a `.txt` file in the browser.

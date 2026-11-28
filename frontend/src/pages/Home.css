@@ -1,0 +1,33 @@
+/* Home. Prefix: hm-. */
+.hm-grid { display: grid; grid-template-columns: minmax(0, 1fr) 372px; gap: 18px; align-items: start; }
+.hm-nudge .rowhead { margin-bottom: 2px; }
+.hm-nudge strong { font-weight: 800; }
+.hm-req-dark { color: var(--ink); }
+.hm-empty { margin-top: 8px; font-size: 15px; color: var(--quiet); }
+
+.hm-blocks li { display: grid; grid-template-columns: 150px 1fr auto; gap: 12px; }
+.hm-when { font-weight: 800; }
+.hm-chip { margin: 0; padding: 3px 8px; font-size: 15px; }
+
+.hm-tasks li { gap: 14px; }
+.hm-task { display: flex; flex-direction: column; min-width: 0; }
+.hm-task strong { font-weight: 800; }
+.hm-task .muted { font-size: 14px; }
+.hm-seg { flex: none; width: 320px; max-width: 100%; margin-top: 0; }
+
+.hm-counts { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 8px; text-align: center; }
+.hm-counts div { padding: 6px 4px; border: 1.5px solid var(--ink); border-radius: var(--wobble); }
+.hm-counts div:last-child { background: var(--pink); }
+.hm-counts b { display: block; font-size: 30px; font-weight: 800; line-height: 1.1; }
+.hm-counts span { font-size: 14px; color: var(--quiet); }
+.hm-done { font-size: 14px; }
+
+@media (max-width: 1099px) {
+  .hm-grid { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 640px) {
+  .hm-blocks li { grid-template-columns: 1fr auto; gap: 2px 12px; }
+  .hm-blocks .hm-when { grid-column: 1 / -1; }
+  .hm-tasks li { flex-wrap: wrap; gap: 6px 14px; }
+  .hm-seg { width: 100%; }
+}

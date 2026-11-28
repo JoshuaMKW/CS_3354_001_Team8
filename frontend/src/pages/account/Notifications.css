@@ -1,0 +1,23 @@
+/* Notifications page (shared ac- rules live in Account.css). */
+.ac-nt-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; align-items: start; }
+.ac-nt-cols > :first-child, .ac-nt-cols > .summary { grid-column: 1 / -1; }
+.ac-nt-cols .summary { margin-top: 0; }
+.ac-saved { margin-right: auto; font-size: 15px; font-weight: 800; }
+
+.ac-seg { width: 220px; margin-top: 9px; }
+.ac-seg button { flex: 1; padding: 4px 3px; font-size: 14px; background: #fff; border: 0; border-left: 1.5px solid var(--ink); cursor: pointer; }
+.ac-seg button:first-child { border-left: 0; }
+.ac-seg button.on { background: var(--pink); font-weight: 800; }
+
+.ac-off { border-style: dashed; }
+.ac-off .ac-toggle, .ac-off label { color: var(--quiet); }
+
+.ac-inbox li { align-items: flex-start; gap: 14px; padding: 8px 0 8px 10px; }
+.ac-inbox li p { margin-top: 2px; color: var(--quiet); font-size: 14px; }
+.ac-inbox li.ac-unread { border-left: 5px solid var(--hot); padding-left: 8px; }
+.ac-inbox li.ac-unread p { color: var(--ink); }
+
+@media (max-width: 640px) {
+  .ac-nt-cols { grid-template-columns: minmax(0, 1fr); }
+  .ac-seg { width: 100%; max-width: 280px; }
+}

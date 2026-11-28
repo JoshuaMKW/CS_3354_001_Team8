@@ -55,6 +55,10 @@ public:
     std::string reply(const std::string& context, const std::string& message) override;
 
     // Exposed for unit tests.
+    // Every session-sized time the student can study: inside study hours, spaced by the
+    // break, clear of personal time and never more per day than the daily maximum. The AI picks from these instead of doing clock
+    // arithmetic, which it often got wrong when the hours were tight.
+    static std::vector<TimeRange> studySlots(const StudyPreferences& prefs);
     static std::string schedulePrompt(const StudyPreferences& prefs,
                                       const std::vector<Assignment>& assignments);
     static std::vector<StudyBlock> parseSchedule(const std::string& modelText);

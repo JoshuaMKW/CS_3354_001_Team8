@@ -1,0 +1,37 @@
+/* Shared by Home, View/Create Schedule and Upload Syllabus. Prefix: vs-. */
+
+/* Router links drawn as wireframe buttons. */
+a.btn.vs-a { display: inline-block; color: var(--ink); text-decoration: none; }
+a.btn.vs-a.primary { color: var(--hot); }
+
+/* .seg / .check from the wireframe, as real controls. */
+.vs-seg button {
+  flex: 1; padding: 4px 6px; font-size: 14px; background: #fff; cursor: pointer;
+  border: 0; border-left: 1.5px solid var(--ink); white-space: nowrap;
+}
+.vs-seg button:first-child { border-left: 0; }
+.vs-seg button.on { background: var(--pink); }
+.vs-seg button[disabled] { cursor: progress; }
+.vs-seg button:focus-visible { outline: 3px solid var(--hot); outline-offset: -3px; }
+
+.vs-check { background: none; border: 0; padding: 0; cursor: pointer; text-align: left; }
+.vs-check:focus-visible .box { box-shadow: 0 0 0 3px var(--hot); }
+
+/* Wireframe-style focus: the hot glow instead of the browser's blue ring. */
+.hm-main .input:focus-visible, .cs-grid .input:focus-visible, .us-grid .input:focus-visible {
+  outline: none; box-shadow: 0 0 0 3px var(--hot);
+}
+
+/* Calendar extras on top of .cal / .block. */
+.vs-cal { grid-auto-rows: 4px; }
+.vs-cal .day b { font-weight: 800; }
+.vs-cal .day.vs-today { background: var(--pink); }
+.vs-cal .day small { color: var(--quiet); font-size: 13px; }
+.vs-block {
+  display: block; width: calc(100% - 6px); text-align: left; cursor: pointer;
+  font-size: 13px; line-height: 1.15; color: var(--ink);
+}
+.vs-block:hover, .vs-block:focus-visible { outline: none; box-shadow: 0 0 0 3px var(--hot); }
+.vs-block .vs-when { display: block; margin-top: 1px; color: var(--quiet); font-size: 12px; }
+.vs-personal { font-size: 13px; }
+.vs-empty-note { margin-top: 8px; color: var(--quiet); font-size: 15px; }

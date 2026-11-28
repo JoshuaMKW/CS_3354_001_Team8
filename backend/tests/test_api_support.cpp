@@ -90,6 +90,22 @@ TEST(Gemini, PromptCarriesPreferencesAndAssignments) {
     EXPECT_THAT(prompt, HasSubstr(R"("sessionMinutes":60)"));
 }
 
+TEST(Gemini, SlotsAreSessionsSpacedByBreaksAroundPersonalTime) {
+    StudyPreferences prefs;
+    prefs.studyHours = {{Day::Tue, hm(10), hm(11)}, {Day::Mon, hm(16), hm(21)}};
+    prefs.personalTime = {{Day::Mon, hm(18), hm(18, 30)}};
+    prefs.sessionMinutes = 60;
+    prefs.breakMinutes = 15;
+    EXPECT_EQ(GeminiClient::studySlots(prefs),
+              (std::vector<TimeRange>{{Day::Mon, hm(16), hm(17)},
+                                      {Day::Mon, hm(17, 15), hm(18)},  // cut short by personal time
+                                      {Day::Mon, hm(18, 30), hm(19, 30)},
+                                      {Day::Mon, hm(19, 45), hm(20)},  // 60 + 45 + 60 + 15 = the 180 min/day max
+                                      {Day::Tue, hm(10), hm(11)}}));
+    EXPECT_THAT(GeminiClient::schedulePrompt(prefs, {}),
+                HasSubstr(R"("slots":[{"day":"Mon","end":"17:00","start":"16:00"})"));
+}
+
 TEST(Gemini, OpenRouterRequestUsesChatCompletionsShape) {
     const auto config = GeminiConfig::openRouter("key");
     EXPECT_EQ(config.host, "https://openrouter.ai");
@@ -191,6 +207,30 @@ TEST_F(AgentTest, LabelsPlansWithTheConfiguredModel) {
     EXPECT_EQ(agentRuns.recent(alice, 5).at(0).engine, "claude-haiku-5.5");
 }
 
+TEST_F(AgentTest, NeverSchedulesStudyTimeThatHasPassed) {
+    const Timestamp thursday = kNow + 3 * kDay + hm(5);  // Thu 17:00 UTC
+    ASSERT_TRUE(settings.save(alice, weekdayEvenings()));
+    const auto essay = addTask(alice, "Essay", thursday + kDay, 120);
+
+    // An AI plan using Monday, which is over, is rejected; the local plan starts after now.
+    gemini.reply = {{"Essay", essay.id, {Day::Mon, hm(16), hm(17)}}};
+    const auto plan = agent.generate(alice, std::nullopt, thursday);
+    ASSERT_TRUE(plan.ok()) << plan.error().message;
+    EXPECT_EQ(plan.value().engine, "local");
+    const auto week = planningWeek(thursday, 0);
+    for (const auto& block : plan.value().blocks) {
+        EXPECT_GE(week.toUtc(block.time.day, block.time.start), thursday) << toString(block.time);
+    }
+}
+
+TEST_F(AgentTest, SaysSoWhenNoStudyHoursAreLeftThisWeek) {
+    ASSERT_TRUE(settings.save(alice, weekdayEvenings()));
+    addTask(alice, "Essay", kNow + 6 * kDay, 60);
+    const auto plan = agent.generate(alice, std::nullopt, kNow + 5 * kDay);  // Saturday
+    ASSERT_FALSE(plan.ok());
+    EXPECT_THAT(plan.error().message, HasSubstr("None of your study hours are left this week"));
+}
+
 TEST_F(AgentTest, FallsBackToLocalPlannerWhenGeminiBreaksTheRules) {
     ASSERT_TRUE(settings.save(alice, weekdayEvenings()));
     const auto essay = addTask(alice, "Essay", kNow + 2 * kDay, 60);
@@ -270,6 +310,77 @@ TEST_F(ScheduleTest, MoveBlockKeepsPreferencesValid) {
     ASSERT_THAT(saved, SizeIs(1));
     EXPECT_EQ(saved[0].time, (TimeRange{Day::Tue, hm(18), hm(19)}));
     EXPECT_EQ(saved[0].title, "Essay draft");
+}
+
+// Generation plans an overdue task as due at Sun 24:00, so its blocks can sit after its
+// real due time. Moving some other block must be checked against that same deadline.
+TEST_F(ScheduleTest, MoveBlockAllowsOverdueTaskBlocksPlacedAfterTheirRealDueTime) {
+    ASSERT_TRUE(settings.save(alice, weekdayEvenings()));
+    const auto lab = addTask(alice, "Lab", kNow + kHour, 60);         // Mon 13:00
+    const auto essay = addTask(alice, "Essay", kNow + 3 * kDay, 60);  // Thu 12:00
+    const Timestamp later = kNow + 2 * kDay;                          // Wed 12:00: Lab is overdue
+    schedules.replace(alice, {{"Lab", lab.id, {Day::Wed, hm(16), hm(17)}},
+                              {"Essay", essay.id, {Day::Wed, hm(18), hm(19)}}});
+
+    const auto moved = controller.moveBlock(
+        alice, {essay.id, {Day::Wed, hm(18), hm(19)}, {Day::Wed, hm(19), hm(20)}, ""}, later);
+    ASSERT_TRUE(moved.ok()) << ::testing::PrintToString(moved.error().details);
+    const auto saved = schedules.getActiveStudyItems(alice);
+    EXPECT_THAT(saved, Contains(StudyBlock{"Essay", essay.id, {Day::Wed, hm(19), hm(20)}}));
+    EXPECT_THAT(saved, Contains(StudyBlock{"Lab", lab.id, {Day::Wed, hm(16), hm(17)}}));
+}
+
+TEST_F(ScheduleTest, MoveBlockStillRejectsMovingANotOverdueTaskPastItsDeadline) {
+    ASSERT_TRUE(settings.save(alice, weekdayEvenings()));
+    const auto essay = addTask(alice, "Essay", kNow + 2 * kDay, 60);  // Wed 12:00
+    schedules.replace(alice, {{"Essay", essay.id, {Day::Mon, hm(16), hm(17)}}});
+
+    const auto late = controller.moveBlock(
+        alice, {essay.id, {Day::Mon, hm(16), hm(17)}, {Day::Thu, hm(16), hm(17)}, ""}, kNow);
+    ASSERT_FALSE(late.ok());
+    EXPECT_EQ(late.error().code, ErrorCode::Unprocessable);
+    EXPECT_THAT(late.error().details, Contains(HasSubstr("ends after \"Essay\" is due")));
+    EXPECT_EQ(schedules.getActiveStudyItems(alice),
+              (std::vector<StudyBlock>{{"Essay", essay.id, {Day::Mon, hm(16), hm(17)}}}));
+}
+
+TEST_F(ScheduleTest, RemoveBlockDeletesOnlyTheMatchingBlock) {
+    const auto essay = addTask(alice, "Essay", kNow + 3 * kDay, 120);
+    const StudyBlock first{"Essay", essay.id, {Day::Mon, hm(16), hm(17)}};
+    const StudyBlock second{"Essay", essay.id, {Day::Thu, hm(10) + 30, hm(12)}};
+    schedules.replace(alice, {first, second});
+
+    const auto removed = controller.removeBlock(alice, {essay.id, second.time});
+    ASSERT_TRUE(removed.ok()) << removed.error().message;
+    EXPECT_EQ(removed.value(), std::vector<StudyBlock>{first});
+    EXPECT_EQ(schedules.getActiveStudyItems(alice), std::vector<StudyBlock>{first});
+}
+
+TEST_F(ScheduleTest, RemoveBlockIs404WhenNothingMatches) {
+    const auto essay = addTask(alice, "Essay", kNow + 3 * kDay, 60);
+    const StudyBlock block{"Essay", essay.id, {Day::Mon, hm(16), hm(17)}};
+    schedules.replace(alice, {block});
+
+    for (const BlockRef& ref : {BlockRef{essay.id, {Day::Mon, hm(16), hm(18)}},
+                                BlockRef{essay.id, {Day::Tue, hm(16), hm(17)}},
+                                BlockRef{"other-task", block.time}}) {
+        const auto removed = controller.removeBlock(alice, ref);
+        ASSERT_FALSE(removed.ok());
+        EXPECT_EQ(removed.error().code, ErrorCode::NotFound);
+        EXPECT_EQ(removed.error().message, "That block isn't on your schedule");
+    }
+    EXPECT_EQ(schedules.getActiveStudyItems(alice), std::vector<StudyBlock>{block});
+}
+
+TEST_F(ScheduleTest, RemoveBlockCannotTouchAnotherStudentsSchedule) {
+    const auto bobsTask = addTask(bob, "Lab", kNow + 3 * kDay, 60);
+    const StudyBlock bobsBlock{"Lab", bobsTask.id, {Day::Wed, hm(18), hm(19)}};
+    schedules.replace(bob, {bobsBlock});
+
+    const auto removed = controller.removeBlock(alice, {bobsTask.id, bobsBlock.time});
+    ASSERT_FALSE(removed.ok());
+    EXPECT_EQ(removed.error().code, ErrorCode::NotFound);
+    EXPECT_EQ(schedules.getActiveStudyItems(bob), std::vector<StudyBlock>{bobsBlock});
 }
 
 TEST_F(ScheduleTest, ExportsICalendar) {

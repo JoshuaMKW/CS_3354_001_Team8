@@ -34,10 +34,27 @@ PlanningWeek planningWeek(Timestamp now, int utcOffsetMinutes) {
     return {localMonday - utcOffsetMinutes, utcOffsetMinutes};
 }
 
-std::vector<Assignment> toAssignments(const std::vector<Task>& tasks, const PlanningWeek& week) {
+StudyPreferences remainingStudyHours(const StudyPreferences& prefs, const PlanningWeek& week,
+                                     Timestamp now) {
+    StudyPreferences out = prefs;
+    out.studyHours.clear();
+    const Timestamp sinceMonday = std::max<Timestamp>(0, now - week.startUtc);
+    const int ceiled = static_cast<int>((sinceMonday + kStep - 1) / kStep * kStep);
+    for (const auto& range : prefs.studyHours) {
+        const int start = std::max(weekMinute(range.day, range.start), ceiled);
+        const int end = weekMinute(range.day, range.end);
+        if (end - start >= kMinChunk) {
+            out.studyHours.push_back({range.day, start - weekMinute(range.day, 0), range.end});
+        }
+    }
+    return out;
+}
+
+std::vector<Assignment> toAssignments(const std::vector<Task>& tasks, const PlanningWeek& week,
+                                      Timestamp now) {
     std::vector<Assignment> out;
     for (const auto& task : tasks) {
-        const auto local = week.toLocal(task.dueAt);
+        const auto local = task.dueAt < now ? std::nullopt : week.toLocal(task.dueAt);
         out.push_back(local ? toAssignment(task, local->first, local->second)
                             : toAssignment(task, Day::Sun, kEndOfWeek));
     }
@@ -46,15 +63,13 @@ std::vector<Assignment> toAssignments(const std::vector<Task>& tasks, const Plan
 
 std::vector<Assignment> plannerAssignments(const std::vector<Task>& tasks, const PlanningWeek& week,
                                            Timestamp now) {
-    std::vector<Assignment> out;
+    std::vector<Task> planned;
     for (const auto& task : tasks) {
         if (task.status == TaskStatus::Completed) continue;
         if (task.dueAt >= now + 7 * kMinutesPerDay) continue;
-        const auto local = task.dueAt < now ? std::nullopt : week.toLocal(task.dueAt);
-        out.push_back(local ? toAssignment(task, local->first, local->second)
-                            : toAssignment(task, Day::Sun, kEndOfWeek));
+        planned.push_back(task);
     }
-    return out;
+    return toAssignments(planned, week, now);
 }
 
 std::vector<StudyBlock> LocalPlanner::proposeSchedule(const StudyPreferences& prefs,

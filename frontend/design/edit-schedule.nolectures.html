@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=1280">
+<title>Edit Schedule: Cramberry wireframe</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="frame">
+<header class="topbar">
+  <span class="brand">Cramberry</span>
+  <nav aria-label="Main"><a href="#">Home</a><a href="#" aria-current="page">Schedule</a><a href="#">Study Planner</a><a href="#">AI Assistant</a><a href="#">Account</a></nav>
+  <span class="who">Student name</span>
+</header>
+
+<p class="crumb">Schedule &gt; Edit Schedule</p>
+<div class="pagehead">
+  <div>
+    <h1>Edit schedule</h1>
+    <p>Drag a block to move it, or pull its edges to change how long it runs.</p>
+  </div>
+  <div class="actions">
+    <button class="btn">Undo</button>
+    <button class="btn">Ask AI to adjust</button>
+  </div>
+</div>
+<main class="editor">
+  <section aria-label="Week view">
+    <div class="weekbar">
+      <button class="btn small" aria-label="Previous week">&lt;</button>
+      <strong>Nov 9 to 15</strong>
+      <button class="btn small" aria-label="Next week">&gt;</button>
+      <div class="legend">
+        <span><i style="background:var(--ink)"></i>Class</span>
+        <span><i style="background:var(--pink)"></i>Study block</span>
+        <span><i style="background:var(--hot)"></i>Selected</span>
+        <span><i class="swatch-personal"></i>Personal time</span>
+      </div>
+    </div>
+    <div class="cal" role="img" aria-label="Weekly schedule with one study block selected">
+<div style="grid-row:1;grid-column:1;border-bottom:2px solid var(--ink)"></div>
+<div class="day" style="grid-column:2">Mon</div>
+<div class="day" style="grid-column:3">Tue</div>
+<div class="day" style="grid-column:4">Wed</div>
+<div class="day" style="grid-column:5">Thu</div>
+<div class="day" style="grid-column:6">Fri</div>
+<div class="day" style="grid-column:7">Sat</div>
+<div class="day" style="grid-column:8">Sun</div>
+<div class="hour" style="grid-row-start:2">8 am</div>
+<div class="slot" style="grid-column:2;grid-row-start:2"></div>
+<div class="slot" style="grid-column:3;grid-row-start:2"></div>
+<div class="slot" style="grid-column:4;grid-row-start:2"></div>
+<div class="slot" style="grid-column:5;grid-row-start:2"></div>
+<div class="slot" style="grid-column:6;grid-row-start:2"></div>
+<div class="slot" style="grid-column:7;grid-row-start:2"></div>
+<div class="slot" style="grid-column:8;grid-row-start:2"></div>
+<div class="hour" style="grid-row-start:4">9 am</div>
+<div class="slot" style="grid-column:2;grid-row-start:4"></div>
+<div class="slot" style="grid-column:3;grid-row-start:4"></div>
+<div class="slot" style="grid-column:4;grid-row-start:4"></div>
+<div class="slot" style="grid-column:5;grid-row-start:4"></div>
+<div class="slot" style="grid-column:6;grid-row-start:4"></div>
+<div class="slot" style="grid-column:7;grid-row-start:4"></div>
+<div class="slot" style="grid-column:8;grid-row-start:4"></div>
+<div class="hour" style="grid-row-start:6">10 am</div>
+<div class="slot" style="grid-column:2;grid-row-start:6"></div>
+<div class="slot" style="grid-column:3;grid-row-start:6"></div>
+<div class="slot" style="grid-column:4;grid-row-start:6"></div>
+<div class="slot" style="grid-column:5;grid-row-start:6"></div>
+<div class="slot" style="grid-column:6;grid-row-start:6"></div>
+<div class="slot" style="grid-column:7;grid-row-start:6"></div>
+<div class="slot" style="grid-column:8;grid-row-start:6"></div>
+<div class="hour" style="grid-row-start:8">11 am</div>
+<div class="slot" style="grid-column:2;grid-row-start:8"></div>
+<div class="slot" style="grid-column:3;grid-row-start:8"></div>
+<div class="slot" style="grid-column:4;grid-row-start:8"></div>
+<div class="slot" style="grid-column:5;grid-row-start:8"></div>
+<div class="slot" style="grid-column:6;grid-row-start:8"></div>
+<div class="slot" style="grid-column:7;grid-row-start:8"></div>
+<div class="slot" style="grid-column:8;grid-row-start:8"></div>
+<div class="hour" style="grid-row-start:10">12 pm</div>
+<div class="slot" style="grid-column:2;grid-row-start:10"></div>
+<div class="slot" style="grid-column:3;grid-row-start:10"></div>
+<div class="slot" style="grid-column:4;grid-row-start:10"></div>
+<div class="slot" style="grid-column:5;grid-row-start:10"></div>
+<div class="slot" style="grid-column:6;grid-row-start:10"></div>
+<div class="slot" style="grid-column:7;grid-row-start:10"></div>
+<div class="slot" style="grid-column:8;grid-row-start:10"></div>
+<div class="hour" style="grid-row-start:12">1 pm</div>
+<div class="slot" style="grid-column:2;grid-row-start:12"></div>
+<div class="slot" style="grid-column:3;grid-row-start:12"></div>
+<div class="slot" style="grid-column:4;grid-row-start:12"></div>
+<div class="slot" style="grid-column:5;grid-row-start:12"></div>
+<div class="slot" style="grid-column:6;grid-row-start:12"></div>
+<div class="slot" style="grid-column:7;grid-row-start:12"></div>
+<div class="slot" style="grid-column:8;grid-row-start:12"></div>
+<div class="hour" style="grid-row-start:14">2 pm</div>
+<div class="slot" style="grid-column:2;grid-row-start:14"></div>
+<div class="slot" style="grid-column:3;grid-row-start:14"></div>
+<div class="slot" style="grid-column:4;grid-row-start:14"></div>
+<div class="slot" style="grid-column:5;grid-row-start:14"></div>
+<div class="slot" style="grid-column:6;grid-row-start:14"></div>
+<div class="slot" style="grid-column:7;grid-row-start:14"></div>
+<div class="slot" style="grid-column:8;grid-row-start:14"></div>
+<div class="hour" style="grid-row-start:16">3 pm</div>
+<div class="slot" style="grid-column:2;grid-row-start:16"></div>
+<div class="slot" style="grid-column:3;grid-row-start:16"></div>
+<div class="slot" style="grid-column:4;grid-row-start:16"></div>
+<div class="slot" style="grid-column:5;grid-row-start:16"></div>
+<div class="slot" style="grid-column:6;grid-row-start:16"></div>
+<div class="slot" style="grid-column:7;grid-row-start:16"></div>
+<div class="slot" style="grid-column:8;grid-row-start:16"></div>
+<div class="hour" style="grid-row-start:18">4 pm</div>
+<div class="slot" style="grid-column:2;grid-row-start:18"></div>
+<div class="slot" style="grid-column:3;grid-row-start:18"></div>
+<div class="slot" style="grid-column:4;grid-row-start:18"></div>
+<div class="slot" style="grid-column:5;grid-row-start:18"></div>
+<div class="slot" style="grid-column:6;grid-row-start:18"></div>
+<div class="slot" style="grid-column:7;grid-row-start:18"></div>
+<div class="slot" style="grid-column:8;grid-row-start:18"></div>
+<div class="hour" style="grid-row-start:20">5 pm</div>
+<div class="slot" style="grid-column:2;grid-row-start:20"></div>
+<div class="slot" style="grid-column:3;grid-row-start:20"></div>
+<div class="slot" style="grid-column:4;grid-row-start:20"></div>
+<div class="slot" style="grid-column:5;grid-row-start:20"></div>
+<div class="slot" style="grid-column:6;grid-row-start:20"></div>
+<div class="slot" style="grid-column:7;grid-row-start:20"></div>
+<div class="slot" style="grid-column:8;grid-row-start:20"></div>
+<div class="hour" style="grid-row-start:22">6 pm</div>
+<div class="slot" style="grid-column:2;grid-row-start:22"></div>
+<div class="slot" style="grid-column:3;grid-row-start:22"></div>
+<div class="slot" style="grid-column:4;grid-row-start:22"></div>
+<div class="slot" style="grid-column:5;grid-row-start:22"></div>
+<div class="slot" style="grid-column:6;grid-row-start:22"></div>
+<div class="slot" style="grid-column:7;grid-row-start:22"></div>
+<div class="slot" style="grid-column:8;grid-row-start:22"></div>
+<div class="hour" style="grid-row-start:24">7 pm</div>
+<div class="slot" style="grid-column:2;grid-row-start:24"></div>
+<div class="slot" style="grid-column:3;grid-row-start:24"></div>
+<div class="slot" style="grid-column:4;grid-row-start:24"></div>
+<div class="slot" style="grid-column:5;grid-row-start:24"></div>
+<div class="slot" style="grid-column:6;grid-row-start:24"></div>
+<div class="slot" style="grid-column:7;grid-row-start:24"></div>
+<div class="slot" style="grid-column:8;grid-row-start:24"></div>
+<div class="block study" style="grid-column:2;grid-row:12/16">Study: read Ch. 10</div>
+<div class="block study" style="grid-column:3;grid-row:14/17">MATH problem set</div>
+<div class="block study" style="grid-column:4;grid-row:16/20">Project: sequence diagrams</div>
+<div class="block study" style="grid-column:5;grid-row:14/16">Flashcards</div>
+<div class="block study" style="grid-column:6;grid-row:4/8">PHYS lab prep</div>
+<div class="block study" style="grid-column:7;grid-row:6/10">Project: wireframes</div>
+<div class="block study" style="grid-column:8;grid-row:16/19">Plan next week</div>
+<div class="block personal" style="grid-column:2;grid-row:22/24">Gym</div>
+<div class="block personal" style="grid-column:4;grid-row:22/24">Gym</div>
+<div class="block personal" style="grid-column:7;grid-row:18/24">Work shift</div>
+<div class="block selected" style="grid-column:5;grid-row:7/10">Review Ch. 9<span class="handle top"></span><span class="handle bottom"></span></div>
+</div>
+  </section>
+  <aside class="panel" aria-label="Selected study block">
+    <div class="rowhead"><h2>Study block</h2><span class="req">FR 17</span></div>
+    <div class="field"><label for="t">Title</label><input id="t" class="input" value="Review Ch. 9"></div>
+    <div class="pair">
+      <div class="field"><label for="c">Course</label><select id="c" class="input"><option>CS 3354</option></select></div>
+      <div class="field"><label for="d">Day</label><select id="d" class="input"><option>Thu, Nov 12</option></select></div>
+    </div>
+    <div class="pair">
+      <div class="field"><label for="s">Start</label><select id="s" class="input"><option>10:30 am</option></select></div>
+      <div class="field"><label for="l">Duration</label><select id="l" class="input"><option>1 h 30 min</option></select></div>
+    </div>
+    <div class="field">
+      <div class="rowhead"><label>Status</label><span class="req">FR 23</span></div>
+      <div class="seg"><span class="on">Not started</span><span>In progress</span><span>Completed</span></div>
+    </div>
+    <div class="why">
+      <div class="rowhead"><span>Why this block?</span><span class="req">FR 15</span></div>
+      Exam is Friday. AI estimated 90 minutes for this chapter.
+    </div>
+    <div class="field">
+      <div class="rowhead"><label for="n">Notes</label><span class="req">FR 8</span></div>
+      <textarea id="n" class="input" rows="2">Focus on the 4+1 views.</textarea>
+    </div>
+    <div class="check"><span class="box on">x</span><span>Rebalance my other study blocks after saving</span></div>
+    <div class="footbuttons">
+      <button class="linkish">Remove block</button>
+      <div class="actions"><button class="btn">Discard</button><button class="btn primary">Save changes</button></div>
+    </div>
+  </aside>
+</main>
+
+</div>
+</body>
+</html>

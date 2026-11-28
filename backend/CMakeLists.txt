@@ -108,6 +108,7 @@ if(CRAMBERRY_BUILD_SERVER AND Drogon_FOUND AND OpenSSL_FOUND)
         tests/test_repositories.cpp
         tests/test_tasks.cpp
         tests/test_users.cpp
+        tests/test_re_login.cpp
     )
     target_link_libraries(cramberry_api_tests PRIVATE cramberry_api GTest::gmock_main)
     gtest_discover_tests(cramberry_api_tests DISCOVERY_TIMEOUT 60)

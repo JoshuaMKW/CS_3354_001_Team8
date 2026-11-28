@@ -1,0 +1,24 @@
+.cb-timer { box-sizing: border-box; max-width: 34rem; padding: 1.5rem; border: 1px solid #b8c9bb; border-radius: 1rem; background: #fff; color: #203327; font: 1rem/1.5 system-ui, sans-serif; }
+.cb-timer h2 { margin: 0; font-size: 1.5rem; }
+.cb-timer p { margin: .5rem 0; }
+.cb-timer__presets, .cb-timer__controls { display: flex; flex-wrap: wrap; gap: .75rem; margin: 1rem 0; }
+.cb-timer button, .cb-timer input { box-sizing: border-box; font: inherit; border: 1px solid #526c5b; border-radius: .5rem; padding: .6rem .9rem; }
+.cb-timer button { background: #e8f1e9; color: #203327; cursor: pointer; }
+.cb-timer button[data-action="start"] { background: #27543a; color: #fff; }
+.cb-timer button:disabled { opacity: .65; cursor: default; }
+.cb-timer :focus-visible { outline: 3px solid #315fbd; outline-offset: 3px; }
+.cb-timer input { width: 6rem; max-width: 100%; color: #203327; background: #fff; }
+.cb-timer label { display: inline-flex; flex-wrap: wrap; align-items: center; gap: .5rem; margin: .5rem .5rem .5rem 0; }
+.cb-timer__clock { margin: 1rem 0; font-size: clamp(2.5rem, 9vw, 4rem); line-height: 1.2; font-weight: 700; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+.cb-timer__error { color: #9b2020; }
+
+/* Fit RM's study timer into the app's look: the .panel supplies the border, so the timer's own box goes. */
+.study-timer .cb-timer { max-width: none; padding: 0; border: 0; border-radius: 0; background: none; color: var(--ink); font: inherit; }
+.study-timer .cb-timer h2 { font-size: 20px; font-weight: 800; }
+.study-timer .cb-timer p { color: var(--quiet); }
+.study-timer .cb-timer button,
+.study-timer .cb-timer input { border: 2px solid var(--ink); border-radius: var(--wobble); background: var(--pink); color: var(--ink); font-weight: 700; }
+.study-timer .cb-timer input { background: #fff; }
+.study-timer .cb-timer button[data-action="start"] { background: var(--ink); color: var(--hot); }
+.study-timer .cb-timer button:disabled { opacity: .45; }
+.study-timer .cb-timer__clock { font-size: clamp(2.5rem, 9vw, 3.5rem); }

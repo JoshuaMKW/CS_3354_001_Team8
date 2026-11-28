@@ -113,5 +113,24 @@ TEST(Planning, PlannerAssignmentsCoverOverdueAndTheNextSevenDays) {
     EXPECT_EQ(assignments[2].dueMinute, kMinutesPerDay);
 }
 
+TEST(Planning, RemainingStudyHoursDropThePast) {
+    const Timestamp now = makeTimestamp(2026, 11, 25, 17, 7);  // Wed 17:07 UTC
+    const auto week = planningWeek(now, 0);
+    StudyPreferences prefs;
+    prefs.studyHours = {{Day::Mon, hm(16), hm(21)},      // earlier day: dropped
+                        {Day::Wed, hm(9), hm(12)},       // earlier today: dropped
+                        {Day::Wed, hm(16), hm(18)},      // in progress: starts at 17:10
+                        {Day::Wed, hm(17), hm(17, 20)},  // only 10 min left: dropped
+                        {Day::Thu, hm(16), hm(21)}};     // later: kept
+    prefs.personalTime = {{Day::Mon, hm(18), hm(19)}};
+    prefs.sessionMinutes = 45;
+
+    const auto remaining = remainingStudyHours(prefs, week, now);
+    EXPECT_EQ(remaining.studyHours,
+              (std::vector<TimeRange>{{Day::Wed, hm(17, 10), hm(18)}, {Day::Thu, hm(16), hm(21)}}));
+    EXPECT_EQ(remaining.personalTime, prefs.personalTime);
+    EXPECT_EQ(remaining.sessionMinutes, 45);
+}
+
 }  // namespace
 }  // namespace cramberry

@@ -1,0 +1,2 @@
+/* Profile page (shared ac- rules live in Account.css). */
+.ac-danger { border-width: 3px; font-weight: 800; background: repeating-linear-gradient(45deg, #fff, #fff 4px, var(--hatch) 4px, var(--hatch) 7px); }

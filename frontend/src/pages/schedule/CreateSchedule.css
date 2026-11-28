@@ -1,0 +1,44 @@
+/* Create Schedule. Prefix: cs-. */
+.cs-grid { display: grid; grid-template-columns: minmax(0, 1fr) 402px; gap: 18px; align-items: start; }
+.cs-part { font-size: 19px; font-weight: 800; margin-bottom: -4px; }
+.cs-copy { margin-top: 6px; font-size: 15px; }
+.cs-row-actions { display: flex; gap: 12px; align-items: center; flex: none; }
+.cs-confirm { font-size: 14px; color: var(--quiet); }
+.cs-code { font-weight: 800; }
+
+.cs-courses li.cs-course-edit { flex-wrap: wrap; gap: 10px; }
+.cs-course-fields { display: grid; grid-template-columns: 120px 1fr 130px; gap: 8px; flex: 1; }
+.cs-course-fields .input { margin-top: 0; }
+.cs-full { flex-basis: 100%; }
+.cs-course-add { display: grid; grid-template-columns: 130px 1fr 140px auto; gap: 10px; align-items: end; margin-top: 4px; }
+
+.cs-due { display: grid; grid-template-columns: 1fr 140px; gap: 8px; }
+.cs-task-form .seg { margin-top: 2px; }
+.cs-saved { font-size: 15px; color: var(--quiet); }
+.cs-list-head { margin-top: 18px; }
+.cs-tasks li { gap: 14px; }
+.cs-tasks li.cs-editing { background: var(--pink); }
+.cs-task-main { display: flex; flex-direction: column; min-width: 0; }
+.cs-task-main strong { font-weight: 800; }
+.cs-task-main .muted { font-size: 14px; }
+.cs-late { font-weight: 800; color: var(--ink); }
+
+.cs-generate { margin-top: 10px; width: 100%; padding: 9px 14px; font-weight: 800; }
+.cs-generate[aria-busy="true"] { cursor: progress; opacity: .7; }
+.cs-result { margin-top: 12px; padding-top: 10px; border-top: 1px dashed var(--line); font-size: 15px; }
+.cs-engine { font-weight: 800; font-size: 16px; }
+.cs-result .why strong { font-weight: 800; }
+.cs-details { margin: 4px 0 0; padding-left: 18px; font-size: 14px; }
+.cs-result-actions { margin-top: 10px; }
+.cs-fail { margin: 12px 0 0; font-size: 15px; }
+.cs-fail strong { font-weight: 800; }
+
+@media (max-width: 1099px) {
+  .cs-grid { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 640px) {
+  .cs-course-fields { grid-template-columns: 1fr; }
+  .cs-course-add { grid-template-columns: 1fr 1fr; }
+  .cs-course-add > :nth-child(2) { grid-column: 1 / -1; grid-row: 2; }
+  .cs-tasks li { flex-wrap: wrap; gap: 6px 14px; }
+}

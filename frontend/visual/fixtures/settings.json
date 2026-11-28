@@ -1,0 +1,119 @@
+{
+  "GET /api/settings/preferences": {
+    "saved": true,
+    "preferences": {
+      "studyHours": [
+        {
+          "day": "Mon",
+          "start": "13:00",
+          "end": "18:00"
+        },
+        {
+          "day": "Tue",
+          "start": "13:00",
+          "end": "18:00"
+        },
+        {
+          "day": "Wed",
+          "start": "13:00",
+          "end": "18:00"
+        },
+        {
+          "day": "Thu",
+          "start": "14:00",
+          "end": "18:00"
+        },
+        {
+          "day": "Fri",
+          "start": "09:00",
+          "end": "12:00"
+        },
+        {
+          "day": "Sat",
+          "start": "09:00",
+          "end": "13:00"
+        },
+        {
+          "day": "Sun",
+          "start": "14:00",
+          "end": "18:00"
+        }
+      ],
+      "maxStudyMinutesPerDay": 300,
+      "sessionMinutes": 90,
+      "breakMinutes": 120,
+      "personalTime": [
+        {
+          "day": "Mon",
+          "start": "18:00",
+          "end": "19:00"
+        },
+        {
+          "day": "Wed",
+          "start": "18:00",
+          "end": "19:00"
+        },
+        {
+          "day": "Sat",
+          "start": "16:00",
+          "end": "19:00"
+        }
+      ]
+    }
+  },
+  "GET /api/users/me": {
+    "id": "00000000-0000-4000-8000-000000000001",
+    "name": "Student name",
+    "email": "student@example.com",
+    "utcOffsetMinutes": -360,
+    "createdAt": "2026-11-02T15:00:00Z"
+  },
+  "GET /api/courses": [
+    {
+      "id": "c-cs3354",
+      "name": "Software Engineering",
+      "code": "CS 3354",
+      "term": "Fall 2026"
+    },
+    {
+      "id": "c-math2418",
+      "name": "Linear Algebra",
+      "code": "MATH 2418",
+      "term": "Fall 2026"
+    },
+    {
+      "id": "c-phys2326",
+      "name": "Electromagnetism and Waves",
+      "code": "PHYS 2326",
+      "term": "Fall 2026"
+    }
+  ],
+  "GET /api/settings/notifications": {
+    "enabled": true,
+    "email": true,
+    "desktop": true,
+    "sms": false,
+    "phoneNumber": "",
+    "deadlineReminders": true,
+    "deadlineLeadMinutes": 1440
+  },
+  "GET /api/notifications": [],
+  "GET /api/health": {
+    "status": "ok",
+    "database": true,
+    "ai": true
+  },
+  "GET /api/schedule": {
+    "weekStart": "2026-11-09T06:00:00Z",
+    "utcOffsetMinutes": -360,
+    "blocks": []
+  },
+  "GET /api/tasks": [],
+  "localStorage": {
+    "cramberry.personalLabels.00000000-0000-4000-8000-000000000001": {
+      "Mon|18:00|19:00": "Gym",
+      "Wed|18:00|19:00": "Gym",
+      "Sat|16:00|19:00": "Work shift"
+    }
+  }
+}

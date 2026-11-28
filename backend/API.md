@@ -438,12 +438,14 @@ Builds and saves the student's study plan for the current week (Monday–Sunday,
 
 Body (optional): `{"day": "Wed"}`. When `day` is given, only that day's study hours are used. The saved schedule is still **replaced** by the result.
 
+**Which hours are used:** only the study hours still ahead this week. Earlier days are skipped, and a range that has already started begins at the next 5-minute mark, so no block is ever in the past.
+
 **Which tasks are planned:**
 - Every unfinished task due within the next 7 days.
 - Tasks already overdue, or due after this week ends, are treated as due at the end of Sunday, so they get time wherever it fits.
 
 **How the plan is made:**
-1. If `OPENROUTER_API_KEY` (default model Claude Haiku 5.5) or `GEMINI_API_KEY` is set, the AI model proposes a plan.
+1. If `OPENROUTER_API_KEY` (default model Claude Haiku 5.5) or `GEMINI_API_KEY` is set, the AI model proposes a plan. The server sends it the open study slots (one session each, spaced by the break, clear of personal time and within the daily maximum), and the AI picks slots and assigns tasks to them.
 2. The proposal is checked against the preferences: inside study hours, no personal time, session length, daily maximum, breaks, every task scheduled before it's due, and no overlaps.
 3. If the AI isn't configured, fails, or breaks a rule, the built-in local planner (earliest deadline first) is used instead. The reasons are listed in `warnings`.
 4. Only a plan that passes every check is saved. Every attempt is recorded (see `GET /api/agent/runs`).
@@ -466,6 +468,7 @@ Body (optional): `{"day": "Wed"}`. When `day` is given, only that day's study ho
 **422 Unprocessable Entity**: the saved schedule is left unchanged. Possible messages:
 - `"Set your study preferences before generating a schedule"`
 - `"You have no unfinished tasks due in the next 7 days"`
+- `"None of your study hours are left this week. Add more study hours or try again on Monday."`
 - `"Couldn't fit your tasks into your study hours. …"`, with `details` listing each problem
 
 **Errors:** `400` for an invalid `day`.
@@ -550,13 +553,31 @@ Moves one block, and optionally renames it.
 
 - `from` must match exactly one current block for that task.
 - The whole schedule must still follow the study preferences after the move.
+- Every block must still end before its task is due. Deadlines are read the same way as in [generation](#post-apiagentgenerate): a task that is already overdue, or due after this week ends, counts as due at the end of Sunday. So blocks planned for an overdue task never block a move, while moving a block past a task's real due time later this week is rejected.
 
 **200 OK**: `{"blocks": [ …Block… ]}`, the full updated schedule.
 
 **Errors:**
 - `400` for malformed `from` or `to`
-- `422` `"That change doesn't fit your study preferences"`, with `details` such as `"\"Essay\" (Sat 10:00 AM-11:00 AM) is outside study hours"`
+- `422` `"That change doesn't fit your study preferences"`, with `details` such as `"\"Essay\" (Sat 10:00 AM-11:00 AM) is outside study hours"`, or `"\"Essay\" (Thu 4:00 PM-5:00 PM) ends after \"Essay\" is due"`
 - `422` `"Set your study preferences first"`
+
+### `DELETE /api/schedule/blocks`
+
+Removes one block.
+
+```json
+{"assignmentId": "92b7b492-…", "day": "Thu", "start": "10:30", "end": "12:00"}
+```
+
+- The block must match exactly one current block for that task.
+- Removing a block can't break a study preference, so preferences aren't checked.
+
+**200 OK**: `{"blocks": [ …Block… ]}`, the full updated schedule.
+
+**Errors:**
+- `400` for a missing `assignmentId` or a malformed `day`, `start` or `end`
+- `404` `"That block isn't on your schedule"`
 
 ### `DELETE /api/schedule`
 

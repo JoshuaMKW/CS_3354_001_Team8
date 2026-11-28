@@ -42,8 +42,7 @@ schedule was retained when generation failed.
 Result: Pass for simulated backend scenarios.
 
 Production uptime, browser compatibility, 200% zoom,
-and contrast requirements were not verified because
-the complete deployed frontend was unavailable.
+and contrast requirements were not tested.
 
 ## User Guide
 
@@ -64,8 +63,8 @@ Backend endpoint: PUT /api/tasks/{id}/status
 
 Backend endpoint: GET /api/reports/weekly
 
-The backend functionality was verified. Final frontend
-navigation remains subject to UI integration.
+In the web app, task status is changed on Home and on Edit Schedule,
+and the weekly report is on Home.
 
 ## AI Usage
 

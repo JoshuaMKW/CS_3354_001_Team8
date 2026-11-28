@@ -1,0 +1,24 @@
+/*
+  App-wide additions on top of base.css (the wireframes' look, made fluid). Use the same tokens
+  (--ink, --pink, --hot, --quiet, --line, --hatch, --wobble) and vocabulary
+  (.panel, .btn, .input, .field, .pair, .rowhead, .req, .alert, .errtext, ...).
+
+  Page-specific styles do NOT go here: each page owns a sibling CSS file
+  (e.g. pages/planner/StudySettings.css) imported from its .tsx. CSS is global,
+  so prefix page classes with a page-specific name (e.g. .ss-, .es-).
+*/
+
+/* Links in body copy look like .linkish buttons. */
+.frame main a, .linkish-a { color: var(--deep); text-decoration: underline; }
+
+/* Visually hidden but readable by screen readers. */
+.sr-only {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+}
+
+/* Quiet helper text under a field or panel heading. */
+.hint { margin-top: 4px; color: var(--quiet); font-size: 14px; }
+
+/* Loading / empty states, in the quiet margin-note voice. */
+.muted { color: var(--quiet); }

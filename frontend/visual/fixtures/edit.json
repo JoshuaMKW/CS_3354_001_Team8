@@ -1,0 +1,433 @@
+{
+  "GET /api/schedule": {
+    "weekStart": "2026-11-09T06:00:00Z",
+    "utcOffsetMinutes": -360,
+    "blocks": [
+      {
+        "title": "Study: read Ch. 10",
+        "assignmentId": "t-read-ch10",
+        "day": "Mon",
+        "start": "13:00",
+        "end": "15:00",
+        "startsAt": "2026-11-09T19:00:00Z",
+        "endsAt": "2026-11-09T21:00:00Z"
+      },
+      {
+        "title": "MATH problem set",
+        "assignmentId": "t-math-pset",
+        "day": "Tue",
+        "start": "14:00",
+        "end": "15:30",
+        "startsAt": "2026-11-10T20:00:00Z",
+        "endsAt": "2026-11-10T21:30:00Z"
+      },
+      {
+        "title": "Project: sequence diagrams",
+        "assignmentId": "t-seq-diagrams",
+        "day": "Wed",
+        "start": "15:00",
+        "end": "17:00",
+        "startsAt": "2026-11-11T21:00:00Z",
+        "endsAt": "2026-11-11T23:00:00Z"
+      },
+      {
+        "title": "Review Ch. 9",
+        "assignmentId": "t-review-ch9",
+        "day": "Thu",
+        "start": "10:30",
+        "end": "12:00",
+        "startsAt": "2026-11-12T16:30:00Z",
+        "endsAt": "2026-11-12T18:00:00Z"
+      },
+      {
+        "title": "Flashcards",
+        "assignmentId": "t-flashcards",
+        "day": "Thu",
+        "start": "14:00",
+        "end": "15:00",
+        "startsAt": "2026-11-12T20:00:00Z",
+        "endsAt": "2026-11-12T21:00:00Z"
+      },
+      {
+        "title": "PHYS lab prep",
+        "assignmentId": "t-phys-lab-prep",
+        "day": "Fri",
+        "start": "09:00",
+        "end": "11:00",
+        "startsAt": "2026-11-13T15:00:00Z",
+        "endsAt": "2026-11-13T17:00:00Z"
+      },
+      {
+        "title": "Project: wireframes",
+        "assignmentId": "t-wireframes",
+        "day": "Sat",
+        "start": "10:00",
+        "end": "12:00",
+        "startsAt": "2026-11-14T16:00:00Z",
+        "endsAt": "2026-11-14T18:00:00Z"
+      },
+      {
+        "title": "Plan next week",
+        "assignmentId": "t-plan-week",
+        "day": "Sun",
+        "start": "15:00",
+        "end": "16:30",
+        "startsAt": "2026-11-15T21:00:00Z",
+        "endsAt": "2026-11-15T22:30:00Z"
+      }
+    ]
+  },
+  "GET /api/tasks": [
+    {
+      "id": "t-read-ch10",
+      "courseId": "c-math2418",
+      "title": "Study: read Ch. 10",
+      "notes": "",
+      "type": "study",
+      "dueAt": "2026-11-14T05:59:00Z",
+      "estimatedMinutes": 120,
+      "priority": 2,
+      "status": "NOT_STARTED",
+      "completedAt": null,
+      "createdAt": "2026-11-02T15:00:00Z",
+      "overdue": false
+    },
+    {
+      "id": "t-math-pset",
+      "courseId": "c-math2418",
+      "title": "MATH problem set",
+      "notes": "",
+      "type": "assignment",
+      "dueAt": "2026-11-14T05:59:00Z",
+      "estimatedMinutes": 90,
+      "priority": 2,
+      "status": "NOT_STARTED",
+      "completedAt": null,
+      "createdAt": "2026-11-02T15:00:00Z",
+      "overdue": false
+    },
+    {
+      "id": "t-flashcards",
+      "courseId": "c-phys2326",
+      "title": "Flashcards",
+      "notes": "",
+      "type": "study",
+      "dueAt": "2026-11-14T05:59:00Z",
+      "estimatedMinutes": 60,
+      "priority": 2,
+      "status": "NOT_STARTED",
+      "completedAt": null,
+      "createdAt": "2026-11-02T15:00:00Z",
+      "overdue": false
+    },
+    {
+      "id": "t-review-ch9",
+      "courseId": "c-cs3354",
+      "title": "Review Ch. 9",
+      "notes": "Focus on the 4+1 views.",
+      "type": "exam",
+      "dueAt": "2026-11-14T05:59:00Z",
+      "estimatedMinutes": 90,
+      "priority": 1,
+      "status": "NOT_STARTED",
+      "completedAt": null,
+      "createdAt": "2026-11-02T15:00:00Z",
+      "overdue": false
+    },
+    {
+      "id": "t-phys-lab-prep",
+      "courseId": "c-phys2326",
+      "title": "PHYS lab prep",
+      "notes": "",
+      "type": "assignment",
+      "dueAt": "2026-11-14T05:59:00Z",
+      "estimatedMinutes": 120,
+      "priority": 2,
+      "status": "NOT_STARTED",
+      "completedAt": null,
+      "createdAt": "2026-11-02T15:00:00Z",
+      "overdue": false
+    },
+    {
+      "id": "t-plan-week",
+      "courseId": null,
+      "title": "Plan next week",
+      "notes": "",
+      "type": "other",
+      "dueAt": "2026-11-16T05:59:00Z",
+      "estimatedMinutes": 90,
+      "priority": 2,
+      "status": "NOT_STARTED",
+      "completedAt": null,
+      "createdAt": "2026-11-02T15:00:00Z",
+      "overdue": false
+    },
+    {
+      "id": "t-seq-diagrams",
+      "courseId": "c-cs3354",
+      "title": "Project: sequence diagrams",
+      "notes": "",
+      "type": "assignment",
+      "dueAt": "2026-11-17T05:59:00Z",
+      "estimatedMinutes": 120,
+      "priority": 2,
+      "status": "NOT_STARTED",
+      "completedAt": null,
+      "createdAt": "2026-11-02T15:00:00Z",
+      "overdue": false
+    },
+    {
+      "id": "t-wireframes",
+      "courseId": "c-cs3354",
+      "title": "Project: wireframes",
+      "notes": "",
+      "type": "assignment",
+      "dueAt": "2026-11-17T05:59:00Z",
+      "estimatedMinutes": 120,
+      "priority": 2,
+      "status": "NOT_STARTED",
+      "completedAt": null,
+      "createdAt": "2026-11-02T15:00:00Z",
+      "overdue": false
+    }
+  ],
+  "GET /api/settings/preferences": {
+    "saved": true,
+    "preferences": {
+      "studyHours": [
+        {
+          "day": "Mon",
+          "start": "13:00",
+          "end": "18:00"
+        },
+        {
+          "day": "Tue",
+          "start": "13:00",
+          "end": "18:00"
+        },
+        {
+          "day": "Wed",
+          "start": "13:00",
+          "end": "18:00"
+        },
+        {
+          "day": "Thu",
+          "start": "10:00",
+          "end": "12:00"
+        },
+        {
+          "day": "Thu",
+          "start": "14:00",
+          "end": "18:00"
+        },
+        {
+          "day": "Fri",
+          "start": "09:00",
+          "end": "12:00"
+        },
+        {
+          "day": "Sat",
+          "start": "09:00",
+          "end": "13:00"
+        },
+        {
+          "day": "Sun",
+          "start": "14:00",
+          "end": "18:00"
+        }
+      ],
+      "maxStudyMinutesPerDay": 300,
+      "sessionMinutes": 120,
+      "breakMinutes": 15,
+      "personalTime": [
+        {
+          "day": "Mon",
+          "start": "18:00",
+          "end": "19:00"
+        },
+        {
+          "day": "Wed",
+          "start": "18:00",
+          "end": "19:00"
+        },
+        {
+          "day": "Sat",
+          "start": "16:00",
+          "end": "19:00"
+        }
+      ]
+    }
+  },
+  "GET /api/users/me": {
+    "id": "00000000-0000-4000-8000-000000000001",
+    "name": "Student name",
+    "email": "student@example.com",
+    "utcOffsetMinutes": -360,
+    "createdAt": "2026-11-02T15:00:00Z"
+  },
+  "GET /api/courses": [
+    {
+      "id": "c-cs3354",
+      "name": "Software Engineering",
+      "code": "CS 3354",
+      "term": "Fall 2026"
+    },
+    {
+      "id": "c-math2418",
+      "name": "Linear Algebra",
+      "code": "MATH 2418",
+      "term": "Fall 2026"
+    },
+    {
+      "id": "c-phys2326",
+      "name": "Electromagnetism and Waves",
+      "code": "PHYS 2326",
+      "term": "Fall 2026"
+    }
+  ],
+  "GET /api/settings/notifications": {
+    "enabled": true,
+    "email": true,
+    "desktop": true,
+    "sms": false,
+    "phoneNumber": "",
+    "deadlineReminders": true,
+    "deadlineLeadMinutes": 1440
+  },
+  "GET /api/notifications": [],
+  "GET /api/health": {
+    "status": "ok",
+    "database": true,
+    "ai": true
+  },
+  "GET /api/agent/runs": [
+    {
+      "id": "run-1",
+      "createdAt": "2026-11-09T13:55:00Z",
+      "engine": "claude-haiku-5.5",
+      "ok": true,
+      "blockCount": 8,
+      "details": []
+    }
+  ],
+  "GET /api/tasks/t-read-ch10": {
+    "id": "t-read-ch10",
+    "courseId": "c-math2418",
+    "title": "Study: read Ch. 10",
+    "notes": "",
+    "type": "study",
+    "dueAt": "2026-11-14T05:59:00Z",
+    "estimatedMinutes": 120,
+    "priority": 2,
+    "status": "NOT_STARTED",
+    "completedAt": null,
+    "createdAt": "2026-11-02T15:00:00Z",
+    "overdue": false
+  },
+  "GET /api/tasks/t-math-pset": {
+    "id": "t-math-pset",
+    "courseId": "c-math2418",
+    "title": "MATH problem set",
+    "notes": "",
+    "type": "assignment",
+    "dueAt": "2026-11-14T05:59:00Z",
+    "estimatedMinutes": 90,
+    "priority": 2,
+    "status": "NOT_STARTED",
+    "completedAt": null,
+    "createdAt": "2026-11-02T15:00:00Z",
+    "overdue": false
+  },
+  "GET /api/tasks/t-flashcards": {
+    "id": "t-flashcards",
+    "courseId": "c-phys2326",
+    "title": "Flashcards",
+    "notes": "",
+    "type": "study",
+    "dueAt": "2026-11-14T05:59:00Z",
+    "estimatedMinutes": 60,
+    "priority": 2,
+    "status": "NOT_STARTED",
+    "completedAt": null,
+    "createdAt": "2026-11-02T15:00:00Z",
+    "overdue": false
+  },
+  "GET /api/tasks/t-review-ch9": {
+    "id": "t-review-ch9",
+    "courseId": "c-cs3354",
+    "title": "Review Ch. 9",
+    "notes": "Focus on the 4+1 views.",
+    "type": "exam",
+    "dueAt": "2026-11-14T05:59:00Z",
+    "estimatedMinutes": 90,
+    "priority": 1,
+    "status": "NOT_STARTED",
+    "completedAt": null,
+    "createdAt": "2026-11-02T15:00:00Z",
+    "overdue": false
+  },
+  "GET /api/tasks/t-phys-lab-prep": {
+    "id": "t-phys-lab-prep",
+    "courseId": "c-phys2326",
+    "title": "PHYS lab prep",
+    "notes": "",
+    "type": "assignment",
+    "dueAt": "2026-11-14T05:59:00Z",
+    "estimatedMinutes": 120,
+    "priority": 2,
+    "status": "NOT_STARTED",
+    "completedAt": null,
+    "createdAt": "2026-11-02T15:00:00Z",
+    "overdue": false
+  },
+  "GET /api/tasks/t-plan-week": {
+    "id": "t-plan-week",
+    "courseId": null,
+    "title": "Plan next week",
+    "notes": "",
+    "type": "other",
+    "dueAt": "2026-11-16T05:59:00Z",
+    "estimatedMinutes": 90,
+    "priority": 2,
+    "status": "NOT_STARTED",
+    "completedAt": null,
+    "createdAt": "2026-11-02T15:00:00Z",
+    "overdue": false
+  },
+  "GET /api/tasks/t-seq-diagrams": {
+    "id": "t-seq-diagrams",
+    "courseId": "c-cs3354",
+    "title": "Project: sequence diagrams",
+    "notes": "",
+    "type": "assignment",
+    "dueAt": "2026-11-17T05:59:00Z",
+    "estimatedMinutes": 120,
+    "priority": 2,
+    "status": "NOT_STARTED",
+    "completedAt": null,
+    "createdAt": "2026-11-02T15:00:00Z",
+    "overdue": false
+  },
+  "GET /api/tasks/t-wireframes": {
+    "id": "t-wireframes",
+    "courseId": "c-cs3354",
+    "title": "Project: wireframes",
+    "notes": "",
+    "type": "assignment",
+    "dueAt": "2026-11-17T05:59:00Z",
+    "estimatedMinutes": 120,
+    "priority": 2,
+    "status": "NOT_STARTED",
+    "completedAt": null,
+    "createdAt": "2026-11-02T15:00:00Z",
+    "overdue": false
+  },
+  "localStorage": {
+    "cramberry.personalLabels.00000000-0000-4000-8000-000000000001": {
+      "Mon|18:00|19:00": "Gym",
+      "Wed|18:00|19:00": "Gym",
+      "Sat|16:00|19:00": "Work shift"
+    }
+  },
+  "route": "/schedule/edit?block=t-review-ch9%7CThu%7C10%3A30"
+}

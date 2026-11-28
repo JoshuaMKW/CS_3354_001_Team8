@@ -1,0 +1,13 @@
+/* Shared by Login.tsx and Signup.tsx. */
+.auth-wrap { display: flex; justify-content: center; padding-top: 48px; }
+.auth-card { width: 400px; max-width: 100%; }
+.auth-card h1 { font-size: 34px; }
+.auth-card .sub { margin: 2px 0 6px; color: var(--quiet); }
+.auth-card .btn.primary { width: 100%; margin-top: 16px; }
+.auth-card .switch { margin-top: 12px; font-size: 15px; text-align: center; }
+.auth-card .switch a { color: var(--deep); }
+.auth-card form > .errtext { margin-top: 12px; }
+
+@media (max-width: 640px) {
+  .auth-wrap { padding-top: 16px; }
+}

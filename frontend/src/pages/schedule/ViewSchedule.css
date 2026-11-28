@@ -1,0 +1,20 @@
+/* View Schedule. Prefix: vs-. */
+.vs-main { display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; }
+.vs-total { color: var(--quiet); font-size: 15px; }
+.vs-export-err { margin: 0; }
+.vs-empty { margin: 10px 0 0; }
+
+.vs-tasks .list li { display: grid; grid-template-columns: 1fr 330px 170px 100px; gap: 12px; }
+.vs-task-main { display: flex; flex-direction: column; }
+.vs-task-main strong { font-weight: 800; }
+.vs-task-main .muted { font-size: 14px; }
+.vs-task-due { font-size: 15px; }
+.vs-task-time { color: var(--quiet); font-size: 14px; }
+.vs-task-status { text-align: right; font-size: 14px; }
+.vs-late { font-weight: 800; }
+
+@media (max-width: 1099px) {
+  .vs-tasks .list li { grid-template-columns: minmax(0, 1fr) auto; }
+  .vs-task-due, .vs-task-time { grid-column: 1; }
+  .vs-task-status { grid-column: 2; grid-row: 1 / span 3; align-self: center; }
+}

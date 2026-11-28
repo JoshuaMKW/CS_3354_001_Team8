@@ -72,12 +72,20 @@ Outcome<GeneratedPlan> AgentController::generate(const std::string& studentId,
     if (assignments.empty()) {
         return Error{ErrorCode::Unprocessable, "You have no unfinished tasks due in the next 7 days", {}};
     }
+    // Only the hours still ahead this week, so neither the AI nor the local planner
+    // schedules study time that has already passed.
+    const StudyPreferences remaining = remainingStudyHours(*prefs, week, now);
+    if (remaining.studyHours.empty()) {
+        return Error{ErrorCode::Unprocessable,
+                     "None of your study hours are left this week. Add more study hours or try again on Monday.",
+                     {}};
+    }
 
     std::vector<std::string> warnings;
     auto attempt = [&](IAiClient& ai, const std::string& engine) -> std::optional<GeneratedPlan> {
         Agent agent(ai);
         NKStudyScheduleService service(agent, schedules_);
-        const auto result = service.generate({studentId, *prefs, assignments, onlyDay});
+        const auto result = service.generate({studentId, remaining, assignments, onlyDay});
         runs_.record({crypto::newId(), studentId, now, engine, result.ok,
                       static_cast<int>(result.schedule.size()), result.errors});
         if (result.ok) return GeneratedPlan{engine, result.schedule, {}};

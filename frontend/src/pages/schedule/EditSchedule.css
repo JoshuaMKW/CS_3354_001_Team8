@@ -1,0 +1,25 @@
+/* Edit Schedule additions. Wireframe classes (.cal, .block, .panel, .alert, ...) come from styles/base.css. */
+
+.es-cal .block.study,
+.es-cal .block.selected { cursor: grab; touch-action: none; user-select: none; }
+.es-cal.es-dragging .block { cursor: grabbing; }
+.es-cal .handle { cursor: ns-resize; }
+.es-cal .block:focus-visible { outline: 3px solid var(--hot); outline-offset: 1px; }
+
+.seg .es-segbtn { cursor: pointer; user-select: none; }
+.seg .es-segbtn:focus-visible { outline: 2px solid var(--ink); outline-offset: -4px; }
+.seg .es-segbtn[aria-disabled="true"] { cursor: not-allowed; color: var(--quiet); }
+
+.es-check { cursor: pointer; user-select: none; }
+.es-check:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+
+.btn[aria-disabled="true"] { cursor: default; }
+
+.alert .es-alertlist { margin: 5px 0 0; padding-left: 18px; font-size: 14px; }
+.alert .es-dismiss { font-size: 14px; }
+
+.es-empty { max-width: 640px; }
+.es-empty p { margin-top: 8px; }
+.es-emptyactions { margin-top: 12px; }
+.es-empty a.btn { text-decoration: none; color: var(--ink); }
+.es-empty a.btn.primary { color: var(--hot); }

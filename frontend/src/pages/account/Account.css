@@ -1,0 +1,33 @@
+/* Shared by Profile, Edit Account and Notifications (prefix ac-). */
+.ac-grid { display: grid; grid-template-columns: 260px minmax(0, 1fr); gap: 18px; align-items: start; }
+.ac-sections { display: grid; gap: 9px; }
+.ac-sections h2 { margin-bottom: 2px; }
+.frame main a.ac-section { display: block; text-align: left; color: var(--ink); text-decoration: none; }
+.ac-section.on { box-shadow: 0 0 0 3px var(--hot); }
+
+.ac-rows { margin: 8px 0 0; padding: 0; list-style: none; }
+.ac-rows li { display: grid; grid-template-columns: 130px 1fr auto; gap: 12px; align-items: center; padding: 8px 0; border-top: 1px dashed var(--line); font-size: 15px; }
+.ac-rows li:first-child { border-top: 0; }
+.ac-rows .ac-k { color: var(--quiet); }
+.frame main a.ac-btnlink { color: var(--ink); text-decoration: none; }
+
+.ac-confirm { margin-top: 10px; padding: 10px 12px; border: 1.5px dashed var(--ink); }
+.ac-confirm .actions { margin-top: 10px; }
+.ac-note { margin-top: 10px; font-size: 15px; font-weight: 800; }
+
+.ac-toggle { display: flex; gap: 8px; align-items: flex-start; margin-top: 10px; padding: 0; background: none; border: 0; cursor: pointer; text-align: left; font-size: 15px; }
+.ac-toggle .box { line-height: 12px; font-size: 13px; }
+.ac-toggle[disabled] { opacity: .45; cursor: not-allowed; }
+.ac-toggle small { display: block; color: var(--quiet); font-size: 14px; }
+.ac-indent { margin-left: 24px; }
+.ac-narrow { max-width: 360px; }
+
+/* Below 1100px the section links sit above the page's panel. */
+@media (max-width: 1099px) {
+  .ac-grid { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 640px) {
+  .ac-rows li { grid-template-columns: minmax(0, 1fr) auto; gap: 2px 12px; }
+  .ac-rows li > span { overflow-wrap: anywhere; }
+  .ac-rows .ac-k { grid-column: 1 / -1; }
+}

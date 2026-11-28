@@ -1,0 +1,42 @@
+/* Upload Syllabus. Prefix: us-. */
+.us-grid { display: grid; grid-template-columns: 402px minmax(0, 1fr); gap: 18px; align-items: start; }
+.us-note { font-size: 14px; }
+.us-note b { font-weight: 800; }
+.us-newcourse { display: grid; grid-template-columns: 1fr 1.4fr 1fr; gap: 8px; }
+.us-label { display: block; font-size: 15px; }
+.us-file { display: flex; gap: 10px; align-items: center; margin-top: 3px; font-size: 15px; }
+.us-pick { display: inline-block; cursor: pointer; }
+.us-pick:focus-within { box-shadow: 0 0 0 3px var(--hot); }
+.us-text { font-size: 14px; line-height: 1.4; border-radius: 12px 8px 14px 7px; }
+.us-panel-foot { margin-top: 10px; }
+
+.us-row { display: grid; grid-template-columns: 22px 1fr 124px 150px 136px 70px; gap: 8px; align-items: center; }
+.us-row .input { margin-top: 0; padding: 4px 8px; font-size: 15px; }
+.us-row .check { margin-top: 0; }
+.us-head { margin-top: 10px; font-size: 13px; color: var(--quiet); }
+.us-rows { margin: 4px 0 0; padding: 0; list-style: none; }
+.us-item { padding: 7px 0; border-top: 1px dashed var(--line); }
+.us-item.us-off .us-row .input, .us-item.us-off .us-source { opacity: .45; }
+.us-source { margin: 3px 0 0 30px; color: var(--quiet); font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.us-item .errtext { margin-left: 30px; }
+.us-more { margin-top: 6px; font-size: 15px; }
+.us-count { margin: 0 auto 0 0; }
+.us-done { margin-top: 10px; }
+
+@media (max-width: 1099px) {
+  .us-grid { grid-template-columns: minmax(0, 1fr); }
+}
+/*
+  Phones: each found deadline becomes a small card. The checkbox and title share the first row;
+  type, date, time and minutes go two to a row under the title. The column header row is hidden
+  because the columns no longer line up (every field keeps its aria-label).
+*/
+@media (max-width: 640px) {
+  .us-newcourse { grid-template-columns: 1fr; }
+  .us-file { flex-wrap: wrap; }
+  .us-head { display: none; }
+  .us-row { grid-template-columns: 22px 1fr 1fr; row-gap: 6px; }
+  .us-row > :nth-child(2) { grid-column: 2 / -1; }
+  .us-row > :nth-child(n+3):nth-child(odd) { grid-column: 2; }
+  .us-source { white-space: normal; }
+}

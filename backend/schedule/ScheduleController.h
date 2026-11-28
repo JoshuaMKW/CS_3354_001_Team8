@@ -34,6 +34,11 @@ struct BlockMove {
     std::string title;  // empty keeps the current title
 };
 
+struct BlockRef {
+    std::string assignmentId;
+    TimeRange time;
+};
+
 // UC-4 View Schedule, UC-6 Modify AI Schedule (FR-17), UC-8 Export Schedule (FR-10).
 class ScheduleController {
 public:
@@ -46,6 +51,8 @@ public:
     // Moves one block; the result must still follow every study preference.
     Outcome<std::vector<StudyBlock>> moveBlock(const std::string& studentId, const BlockMove& move,
                                                Timestamp now);
+    // Removes one block. Fewer study blocks can't break a preference, so nothing is re-checked.
+    Outcome<std::vector<StudyBlock>> removeBlock(const std::string& studentId, const BlockRef& block);
     void clear(const std::string& studentId);
     // iCalendar (RFC 5545) with this week's study blocks and upcoming deadlines.
     Outcome<std::string> exportIcs(const std::string& studentId, Timestamp now) const;

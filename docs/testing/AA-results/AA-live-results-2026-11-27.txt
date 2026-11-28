@@ -1,0 +1,63 @@
+AA live tests against http://127.0.0.1:8080 at 2026-11-27 17:53 UTC, health={'ai': True, 'database': True, 'status': 'ok'}
+[PASS] TC-10-02 Valid scheduling request is processed into a plan (live)
+    ok  HTTP 200
+    ok  plan made by the AI model (engine claude-haiku-5.5), not the fallback
+    ok  no warnings
+    ok  both tasks have at least one block
+    ok  AI generation finished within 10 s
+    actual: 200, engine=claude-haiku-5.5, 5 blocks, warnings=[], 3184 ms
+[PASS] TC-12-02 AI-generated schedule is validated and saved to Supabase (live)
+    ok  GET /api/schedule returns 200
+    ok  saved schedule equals the plan that was returned
+    ok  every block obeys the preferences and none is in the past (independent re-check)
+    ok  study_blocks rows in Supabase = blocks returned
+    ok  generation_runs records a successful claude-haiku-5.5 run
+    actual: 5 saved blocks, 5 rows in study_blocks, latest run=('claude-haiku-5.5', 1, 3), rule problems=none
+[PASS] TC-10-03 Invalid scheduling input is rejected with field errors (live)
+    ok  missing title -> 400 with a message
+    ok  due date in words -> 400 with a message
+    ok  estimate of 0 minutes -> 400 with a message
+    ok  priority 5 -> 400 with a message
+    ok  unknown type -> 400 with a message
+    ok  generate with day "Funday" -> 400
+    ok  no task was saved (API and Supabase both 0)
+    actual: missing title: 400 "Enter a title"; due date in words: 400 "dueAt must be a UTC date/time like 2026-12-01T23:59:00Z"; estimate of 0 minutes: 400 "Estimated time must be between 1 minute and 7 days"; priority 5: 400 "Priority must be 1 (high), 2 (medium) or 3 (low)"; unknown type: 400 "type must be assignment, exam, study or other"; Funday: 400 "day must be Mon, Tue, ... or Sun"; tasks saved: 0
+[PASS] TC-10-04 Request without study preferences is refused (live)
+    ok  HTTP 422
+    ok  tells the student to set preferences first
+    ok  no schedule saved in Supabase
+    actual: 422 "Set your study preferences before generating a schedule", study_blocks rows: 0
+[PASS] TC-11-02 Student data is saved, updated and read back from Supabase (live)
+    ok  PUT preferences 200, POST task 201, PATCH 200, status 200, GET 200
+    ok  GET returns the updated values, title unchanged
+    ok  row in Supabase has the same values
+    ok  preferences read back as saved
+    actual: GET task: estimate=150, priority=1, status=IN_PROGRESS; Supabase row=('CS 3354 Project demo', 150, 1, 'IN_PROGRESS', 'practice the demo twice'); preferences saved=True
+[PASS] TC-12-03 AI failure is caught and the local planner's valid plan is saved instead (live)
+    ok  HTTP 200 (the student still gets a plan)
+    ok  engine is "local"
+    ok  warning names the AI error
+    ok  runs log: every AI attempt failed, each matched by a successful local run
+    ok  saved fallback schedule obeys the preferences and none is in the past
+    actual: 200, engine=local, warnings=['no-such-model: AI or schedule storage is currently unavailable; saved plan was not intentionally replaced', 'no-such-model: OpenRouter returned HTTP 400'], runs=[('no-such-model', False), ('no-such-model', False), ('local', True), ('local', True)], 2 blocks saved, rule problems=none, 1200 ms
+[PASS] TC-NFR18-02 Standard API requests finish within 2 s against Supabase (live)
+    ok  p95 of 500 requests < 2000 ms
+    ok  at least 95% of requests < 2000 ms
+    ok  every request succeeded
+    actual: 500 requests: p50=238.9 ms, p95=498.5 ms, max=716.7 ms, 100.0% under 2 s, 0 failures
+[PASS] TC-NFR19-02 Students can't read or change each other's data (live)
+    ok  B reads A's task -> 404
+    ok  B edits A's task -> 404
+    ok  B changes A's task status -> 404
+    ok  B deletes A's task -> 404
+    ok  B edits A's course -> 404
+    ok  B files a task under A's course -> 400
+    ok  no token -> 401
+    ok  made-up token -> 401
+    ok  A's token after logout -> 401
+    ok  B's task list is empty (A's task not listed)
+    ok  A's row in Supabase is unchanged
+    ok  nothing was created for B
+    actual: B reads A's task: 404; B edits A's task: 404; B changes A's task status: 404; B deletes A's task: 404; B edits A's course: 404; B files a task under A's course: 400; no token: 401; made-up token: 401; A's token after logout: 401; A's row unchanged: True
+
+8/8 passed; details in /private/tmp/claude-501/-Users-adb-Desktop-Spring-26-replaced-by-AI-project/9e2aabb9-44c2-476d-b1fa-8943b2bae7ce/scratchpad/aa_live_results.json

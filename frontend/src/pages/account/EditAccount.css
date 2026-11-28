@@ -1,0 +1,4 @@
+/* Edit Account page (shared ac- rules live in Account.css). */
+.ac-form .why { margin-top: 12px; }
+.ac-form .alert { margin: 10px 0 0; }
+.ac-form .summary .ac-note { margin: 0 auto 0 0; }

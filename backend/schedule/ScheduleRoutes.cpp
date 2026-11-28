@@ -69,6 +69,28 @@ void registerScheduleRoutes(drogon::HttpAppFramework& app, ScheduleController& s
         }),
         {drogon::Patch});
 
+    app.registerHandler(
+        "/api/schedule/blocks",
+        guard([&schedule](const http::HttpRequestPtr& req, const std::string& studentId) {
+            const auto body = http::body(req);
+            if (!body) return http::badBody();
+            std::string error;
+            const auto time = json::timeRangeFromJson(*body, error);
+            if (!time) return http::error(drogon::k400BadRequest, error);
+            if (!(*body)["assignmentId"].isString()) {
+                return http::error(drogon::k400BadRequest, "assignmentId is required");
+            }
+
+            const auto removed = schedule.removeBlock(studentId, {(*body)["assignmentId"].asString(), *time});
+            if (!removed) return http::error(removed.error());
+            const auto week = schedule.week(studentId, json::nowMinutes());
+            if (!week) return http::error(week.error());
+            Json::Value v;
+            v["blocks"] = blocksJson(removed.value(), week.value());
+            return http::json(v);
+        }),
+        {drogon::Delete});
+
     app.registerHandler("/api/schedule",
                         guard([&schedule](const http::HttpRequestPtr&, const std::string& studentId) {
                             schedule.clear(studentId);
